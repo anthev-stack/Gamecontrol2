@@ -13,6 +13,21 @@ const gray = {
     900: 'hsl(210, 24%, 16%)',
 };
 
+// GameControl Dark Blue Theme
+const darkBlue = {
+    50: '#e6f0ff',
+    100: '#cce0ff',
+    200: '#99c2ff',
+    300: '#66a3ff',
+    400: '#3385ff',
+    500: '#0066ff',
+    600: '#0052cc',
+    700: '#003d99',
+    800: '#002966',
+    900: '#001433',
+    950: '#000a1a',
+};
+
 module.exports = {
     content: [
         './resources/scripts/**/*.{js,ts,tsx}',
@@ -23,13 +38,19 @@ module.exports = {
                 header: ['"IBM Plex Sans"', '"Roboto"', 'system-ui', 'sans-serif'],
             },
             colors: {
-                black: '#131a20',
+                black: '#000a1a',
                 // "primary" and "neutral" are deprecated, prefer the use of "blue" and "gray"
                 // in new code.
-                primary: colors.blue,
+                primary: darkBlue,
+                blue: darkBlue,
                 gray: gray,
                 neutral: gray,
                 cyan: colors.cyan,
+                darkBlue: darkBlue,
+            },
+            backgroundImage: {
+                'gradient-gamecontrol': 'linear-gradient(135deg, #001433 0%, #0052cc 50%, #0066ff 100%)',
+                'gradient-gamecontrol-dark': 'linear-gradient(135deg, #000a1a 0%, #002966 50%, #003d99 100%)',
             },
             fontSize: {
                 '2xs': '0.625rem',

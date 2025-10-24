@@ -3,8 +3,27 @@ import { createGlobalStyle } from 'styled-components/macro';
 
 export default createGlobalStyle`
     body {
-        ${tw`font-sans bg-neutral-800 text-neutral-200`};
+        ${tw`font-sans text-neutral-200`};
         letter-spacing: 0.015em;
+        background: linear-gradient(135deg, #001433 0%, #0052cc 50%, #0066ff 100%);
+        background-attachment: fixed;
+        min-height: 100vh;
+    }
+    
+    /* Add transparency to content blocks */
+    [class*="ContentBox"], 
+    [class*="TitledGreyBox"],
+    [class*="GreyRowBox"],
+    .bg-neutral-700,
+    .bg-neutral-800,
+    .bg-neutral-900 {
+        background-color: rgba(15, 23, 42, 0.75) !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    .bg-neutral-600 {
+        background-color: rgba(30, 41, 59, 0.75) !important;
+        backdrop-filter: blur(10px);
     }
 
     h1, h2, h3, h4, h5, h6 {

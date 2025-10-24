@@ -1,0 +1,138 @@
+/* GameControl Custom Theme Styles */
+
+/* Navbar darker styling while maintaining 2-tone effect */
+nav[class*="NavigationBar"],
+nav.bg-neutral-900,
+header.bg-neutral-900 {
+    background-color: #000a1a !important; /* Darkest blue */
+}
+
+nav[class*="NavigationBar"] > div,
+nav.bg-neutral-800,
+header.bg-neutral-800 {
+    background-color: #001433 !important; /* Dark blue for secondary nav */
+}
+
+/* Sub-navigation darker styling */
+.bg-neutral-700 {
+    background-color: rgba(0, 41, 102, 0.8) !important;
+}
+
+/* Content containers with transparency */
+.container,
+.rounded,
+.rounded-lg,
+.rounded-md,
+[class*="Card"],
+[class*="Box"] {
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(10px);
+    border-color: rgba(66, 153, 255, 0.2);
+}
+
+/* Modal backgrounds */
+[role="dialog"],
+.modal,
+[class*="Modal"] {
+    background-color: rgba(0, 10, 26, 0.95) !important;
+    backdrop-filter: blur(15px);
+}
+
+/* Input fields with slight transparency */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border-color: rgba(66, 153, 255, 0.3) !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    border-color: rgba(66, 153, 255, 0.6) !important;
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1) !important;
+}
+
+/* Buttons with gradient accent */
+button.bg-primary-500,
+button.bg-blue-500,
+.btn-primary {
+    background: linear-gradient(135deg, #0052cc 0%, #0066ff 100%);
+    border: none;
+}
+
+button.bg-primary-500:hover,
+button.bg-blue-500:hover,
+.btn-primary:hover {
+    background: linear-gradient(135deg, #003d99 0%, #0052cc 100%);
+}
+
+/* Server cards and rows */
+[class*="ServerRow"],
+[class*="server-row"] {
+    background-color: rgba(15, 23, 42, 0.7) !important;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+[class*="ServerRow"]:hover,
+[class*="server-row"]:hover {
+    background-color: rgba(0, 52, 204, 0.2) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+}
+
+/* Scrollbar with blue theme */
+::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 0 1px rgba(66, 153, 255, 0.5), 
+                        inset 0 0 0 4px rgba(0, 41, 102, 0.8) !important;
+}
+
+/* Tables with transparency */
+table {
+    background-color: transparent !important;
+}
+
+tr {
+    background-color: rgba(15, 23, 42, 0.5) !important;
+}
+
+tr:hover {
+    background-color: rgba(0, 52, 204, 0.2) !important;
+}
+
+th {
+    background-color: rgba(0, 20, 51, 0.8) !important;
+}
+
+/* Alerts and notifications */
+.alert,
+[class*="Alert"] {
+    backdrop-filter: blur(10px);
+}
+
+/* Loading spinners with blue theme */
+.spinner,
+[class*="Spinner"] {
+    border-color: rgba(0, 102, 255, 0.2);
+    border-top-color: #0066ff;
+}
+
+/* Enhanced glow effects for interactive elements */
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #0066ff;
+    outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
