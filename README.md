@@ -1,72 +1,149 @@
-[![Logo Image](https://cdn.pterodactyl.io/logos/new/pterodactyl_logo.png)](https://pterodactyl.io)
+# GameControl 2.0
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pterodactyl/panel/ci.yaml?label=Tests&style=for-the-badge&branch=1.0-develop)
-![Discord](https://img.shields.io/discord/122900397965705216?label=Discord&logo=Discord&logoColor=white&style=for-the-badge)
-![GitHub Releases](https://img.shields.io/github/downloads/pterodactyl/panel/latest/total?style=for-the-badge)
-![GitHub contributors](https://img.shields.io/github/contributors/pterodactyl/panel?style=for-the-badge)
+A customized version of Pterodactyl Panel for game server hosting.
 
-# Pterodactyl Panel
+![License](https://img.shields.io/github/license/anthev-stack/Gamecontrol2)
+![Stars](https://img.shields.io/github/stars/anthev-stack/Gamecontrol2)
 
-Pterodactyl® is a free, open-source game server management panel built with PHP, React, and Go. Designed with security
-in mind, Pterodactyl runs all game servers in isolated Docker containers while exposing a beautiful and intuitive
-UI to end users.
+## 🎮 About
 
-Stop settling for less. Make game servers a first class citizen on your platform.
+GameControl 2.0 is a powerful, customized game server management panel built on Pterodactyl. It provides an intuitive interface for managing game servers, users, and resources.
 
-![Image](https://cdn.pterodactyl.io/site-assets/pterodactyl_v1_demo.gif)
+## ✨ Features
 
-## Documentation
+- 🎯 **User-Friendly Dashboard** - Clean, modern interface
+- 🔒 **Secure** - Built-in security features and 2FA
+- 🚀 **Fast Deployment** - Automated deployment scripts
+- 🎨 **Customizable** - Easy branding and theming
+- 📊 **Resource Management** - Monitor server resources in real-time
+- 🔌 **API Access** - Full RESTful API
+- 🌐 **Multi-Node Support** - Scale across multiple servers
+- 📦 **Game Support** - Minecraft, Rust, ARK, CS2, and more
 
-* [Panel Documentation](https://pterodactyl.io/panel/1.0/getting_started.html)
-* [Wings Documentation](https://pterodactyl.io/wings/1.0/installing.html)
-* [Community Guides](https://pterodactyl.io/community/about.html)
-* Or, get additional help [via Discord](https://discord.gg/pterodactyl)
+## 🚀 Quick Start
 
-## Sponsors
+### Prerequisites
 
-I would like to extend my sincere thanks to the following sponsors for helping fund Pterodactyl's development.
-[Interested in becoming a sponsor?](https://github.com/sponsors/matthewpi)
+- Ubuntu 20.04 or 22.04
+- 2GB+ RAM
+- Domain name
+- Root/sudo access
 
-| Company                                                                           | About                                                                                                                                                                                                                                           |
-|-----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**Aussie Server Hosts**](https://aussieserverhosts.com/)                         | No frills Australian Owned and operated High Performance Server hosting for some of the most demanding games serving Australia and New Zealand.                                                                                                 |
-| [**BisectHosting**](https://www.bisecthosting.com/)                               | BisectHosting provides Minecraft, Valheim and other server hosting services with the highest reliability and lightning fast support since 2012.                                                                                                 |
-| [**MineStrator**](https://minestrator.com/)                                       | Looking for the most highend French hosting company for your minecraft server? More than 24,000 members on our discord trust us. Give us a try!                                                                                                 |
-| [**HostEZ**](https://hostez.io)                                                   | US & EU Rust & Minecraft Hosting. DDoS Protected bare metal, VPS and colocation with low latency, high uptime and maximum availability. EZ!                                                                                                     |
-| [**Blueprint**](https://blueprint.zip/?utm_source=pterodactyl&utm_medium=sponsor) | Create and install Pterodactyl addons and themes with the growing Blueprint framework - the package-manager for Pterodactyl. Use multiple modifications at once without worrying about conflicts and make use of the large extension ecosystem. |
-| [**indifferent broccoli**](https://indifferentbroccoli.com/)                      | indifferent broccoli is a game server hosting and rental company. With us, you get top-notch computer power for your gaming sessions. We destroy lag, latency, and complexity--letting you focus on the fun stuff.                              |
+### Installation
 
-### Supported Games
+1. **Clone the repository**:
+```bash
+git clone https://github.com/anthev-stack/Gamecontrol2.git /var/www/pterodactyl
+cd /var/www/pterodactyl
+```
 
-Pterodactyl supports a wide variety of games by utilizing Docker containers to isolate each instance. This gives
-you the power to run game servers without bloating machines with a host of additional dependencies.
+2. **Follow the deployment guide**:
+See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed installation instructions.
 
-Some of our core supported games include:
+3. **Customize your panel**:
+See [CUSTOMIZATION_GUIDE.md](./CUSTOMIZATION_GUIDE.md) for branding and customization options.
 
-* Minecraft — including Paper, Sponge, Bungeecord, Waterfall, and more
-* Rust
-* Terraria
-* Teamspeak
-* Mumble
-* Team Fortress 2
-* Counter Strike: Global Offensive
-* Garry's Mod
-* ARK: Survival Evolved
+## 📚 Documentation
 
-In addition to our standard nest of supported games, our community is constantly pushing the limits of this software
-and there are plenty more games available provided by the community. Some of these games include:
+- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Complete installation and setup instructions
+- **[Customization Guide](./CUSTOMIZATION_GUIDE.md)** - Branding and customization options
+- **[Pterodactyl Docs](https://pterodactyl.io)** - Official Pterodactyl documentation
 
-* Factorio
-* San Andreas: MP
-* Pocketmine MP
-* Squad
-* Xonotic
-* Starmade
-* Discord ATLBot, and most other Node.js/Python discord bots
-* [and many more...](https://pterodactyleggs.com)
+## 🔧 Technologies
 
-## License
+- **Backend**: PHP 8.1, Laravel 10
+- **Frontend**: React, TypeScript, TailwindCSS
+- **Database**: MySQL/MariaDB
+- **Cache**: Redis
+- **Server Management**: Docker, Wings
 
-Pterodactyl® Copyright © 2015 - 2022 Dane Everitt and contributors.
+## 🛠️ Development
 
-Code released under the [MIT License](./LICENSE.md).
+### Local Setup
+
+1. **Install dependencies**:
+```bash
+composer install
+yarn install
+```
+
+2. **Configure environment**:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+3. **Run development server**:
+```bash
+php artisan serve
+yarn watch
+```
+
+## 📦 Deployment
+
+### Automated Deployment
+
+The project includes automated deployment via GitHub Actions:
+
+1. Set up GitHub Secrets:
+   - `VM_HOST` - Your VM IP address
+   - `VM_USERNAME` - SSH username
+   - `VM_SSH_KEY` - Private SSH key
+   - `VM_PORT` - SSH port (usually 22)
+
+2. Push to main branch:
+```bash
+git push origin main
+```
+
+The panel will automatically deploy to your VM!
+
+### Manual Deployment
+
+```bash
+cd /var/www/pterodactyl
+sudo ./deploy.sh
+```
+
+## 🎨 Customization
+
+The panel is designed to be easily customizable:
+
+- **Colors & Themes**: Edit `tailwind.config.js`
+- **Logo**: Replace `resources/scripts/assets/images/pterodactyl.svg`
+- **Branding**: Update `.env` and config files
+- **Custom Pages**: Add routes and views
+
+See [CUSTOMIZATION_GUIDE.md](./CUSTOMIZATION_GUIDE.md) for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## 🙏 Acknowledgments
+
+- Built on [Pterodactyl Panel](https://github.com/pterodactyl/panel)
+- Thanks to the Pterodactyl community
+
+## 📞 Support
+
+- **GitHub Issues**: [Create an issue](https://github.com/anthev-stack/Gamecontrol2/issues)
+- **Discord**: Join the Pterodactyl Discord
+
+## 🔐 Security
+
+If you discover a security vulnerability, please email [your-email@example.com](mailto:your-email@example.com).
+
+---
+
+Made with ❤️ for the gaming community
