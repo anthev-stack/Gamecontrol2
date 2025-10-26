@@ -95,6 +95,10 @@ export default ({ children, ...props }: Props) => {
                                 position: strategy,
                                 top: `${y || 0}px`,
                                 left: `${x || 0}px`,
+                                width: 'auto',
+                                height: 'auto',
+                                display: 'inline-block',
+                                whiteSpace: 'nowrap',
                             },
                         })}
                     >
