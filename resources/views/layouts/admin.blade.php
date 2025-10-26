@@ -111,6 +111,11 @@
                                 <i class="fa fa-users"></i> <span>Users</span>
                             </a>
                         </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.credits') ?: 'active' }}">
+                            <a href="{{ route('admin.credits') }}">
+                                <i class="fa fa-dollar"></i> <span>Credits</span>
+                            </a>
+                        </li>
                         <li class="header">SERVICE MANAGEMENT</li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">
