@@ -1,4 +1,5 @@
 @import './css/gamecontrol-theme.css';
+@import './css/squared-elements.css';
 
 @tailwind base;
 @tailwind components;

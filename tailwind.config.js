@@ -61,6 +61,16 @@ module.exports = {
             borderColor: theme => ({
                 default: theme('colors.neutral.400', 'currentColor'),
             }),
+            borderRadius: {
+                'none': '0',
+                'sm': '1px',
+                DEFAULT: '1px',
+                'md': '2px',
+                'lg': '2px',
+                'xl': '3px',
+                '2xl': '4px',
+                'full': '9999px',
+            },
         },
     },
     plugins: [
