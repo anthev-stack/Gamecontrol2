@@ -36,6 +36,9 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('web')->group(function () {
+                // Allow homepage access without authentication
+                Route::get('/', [\Pterodactyl\Http\Controllers\Base\IndexController::class, 'index'])->name('index');
+                
                 Route::middleware(['auth.session', RequireTwoFactorAuthentication::class])
                     ->group(base_path('routes/base.php'));
 

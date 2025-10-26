@@ -32,9 +32,22 @@ const RightNavigation = styled.div`
     }
 `;
 
+const LoginButton = styled(Link)`
+    ${tw`px-6 py-2 rounded-lg font-semibold transition-all duration-300 mr-4`};
+    background: linear-gradient(135deg, #0052cc 0%, #0066ff 100%);
+    color: white;
+    
+    &:hover {
+        background: linear-gradient(135deg, #003d99 0%, #0052cc 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+    }
+`;
+
 export default () => {
     const name = useStoreState((state: ApplicationStore) => state.settings.data!.name);
-    const rootAdmin = useStoreState((state: ApplicationStore) => state.user.data!.rootAdmin);
+    const user = useStoreState((state: ApplicationStore) => state.user.data);
+    const rootAdmin = user?.rootAdmin || false;
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const onTriggerLogout = () => {
@@ -60,31 +73,41 @@ export default () => {
                     </Link>
                 </div>
                 <RightNavigation className={'flex h-full items-center justify-center'}>
-                    <SearchContainer />
-                    <Tooltip placement={'bottom'} content={'Server Dashboard'}>
-                        <NavLink to={'/servers'}>
-                            <FontAwesomeIcon icon={faLayerGroup} />
-                        </NavLink>
-                    </Tooltip>
-                    {rootAdmin && (
-                        <Tooltip placement={'bottom'} content={'Admin Panel'}>
-                            <a href={'/admin'} rel={'noreferrer'}>
-                                <FontAwesomeIcon icon={faCogs} />
-                            </a>
-                        </Tooltip>
+                    {user ? (
+                        <>
+                            <SearchContainer />
+                            <Tooltip placement={'bottom'} content={'Server Dashboard'}>
+                                <NavLink to={'/servers'}>
+                                    <FontAwesomeIcon icon={faLayerGroup} />
+                                </NavLink>
+                            </Tooltip>
+                            {rootAdmin && (
+                                <Tooltip placement={'bottom'} content={'Admin Panel'}>
+                                    <a href={'/admin'} rel={'noreferrer'}>
+                                        <FontAwesomeIcon icon={faCogs} />
+                                    </a>
+                                </Tooltip>
+                            )}
+                            <Tooltip placement={'bottom'} content={'Account Settings'}>
+                                <NavLink to={'/account'}>
+                                    <span className={'flex items-center w-5 h-5'}>
+                                        <Avatar.User />
+                                    </span>
+                                </NavLink>
+                            </Tooltip>
+                            <Tooltip placement={'bottom'} content={'Sign Out'}>
+                                <button onClick={onTriggerLogout}>
+                                    <FontAwesomeIcon icon={faSignOutAlt} />
+                                </button>
+                            </Tooltip>
+                        </>
+                    ) : (
+                        <div className={'flex items-center px-4'}>
+                            <LoginButton to={'/auth/login'}>
+                                Login / Sign Up
+                            </LoginButton>
+                        </div>
                     )}
-                    <Tooltip placement={'bottom'} content={'Account Settings'}>
-                        <NavLink to={'/account'}>
-                            <span className={'flex items-center w-5 h-5'}>
-                                <Avatar.User />
-                            </span>
-                        </NavLink>
-                    </Tooltip>
-                    <Tooltip placement={'bottom'} content={'Sign Out'}>
-                        <button onClick={onTriggerLogout}>
-                            <FontAwesomeIcon icon={faSignOutAlt} />
-                        </button>
-                    </Tooltip>
                 </RightNavigation>
             </div>
         </div>
