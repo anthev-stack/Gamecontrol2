@@ -91,7 +91,8 @@ const SplitBillingCard = styled.div`
 `;
 
 export default () => {
-    const [activeTab, setActiveTab] = useState<'overview' | 'invoices' | 'split'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'invoices' | 'split' | 'credits'>('overview');
+    const [userCredits] = useState(250); // Mock: 250 credits = $25.00
 
     const mockInvoices = [
         { id: 'INV-001', date: '2025-10-01', amount: '$15.00', status: 'paid' as const, description: 'Monthly Hosting - Minecraft Server' },
@@ -105,11 +106,21 @@ export default () => {
         { id: 2, serverName: 'CS2 SERVER', partner: 'sarah@example.com', yourShare: '60%', amount: '$4.80', status: 'Active' },
     ];
 
+    const mockCreditHistory = [
+        { id: 1, date: '2025-10-20', type: 'Referral Bonus', amount: '+100', description: 'Friend signed up using your code' },
+        { id: 2, date: '2025-10-15', type: 'Admin Grant', amount: '+150', description: 'Giveaway winner' },
+        { id: 3, date: '2025-10-01', type: 'Payment Applied', amount: '-50', description: 'Applied to October invoice' },
+    ];
+
     return (
         <PageContentBlock title={'Billing & Payments'} showFlashKey={'billing'}>
             <Container>
                 {/* Stats Overview */}
                 <Grid>
+                    <StatCard>
+                        <StatValue>{userCredits}</StatValue>
+                        <StatLabel>Credits (${(userCredits / 10).toFixed(2)} value)</StatLabel>
+                    </StatCard>
                     <StatCard>
                         <StatValue>$15.00</StatValue>
                         <StatLabel>Current Balance</StatLabel>
@@ -117,10 +128,6 @@ export default () => {
                     <StatCard>
                         <StatValue>$180.00</StatValue>
                         <StatLabel>Total Spent</StatLabel>
-                    </StatCard>
-                    <StatCard>
-                        <StatValue>12</StatValue>
-                        <StatLabel>Invoices</StatLabel>
                     </StatCard>
                     <StatCard>
                         <StatValue>2</StatValue>
@@ -135,6 +142,12 @@ export default () => {
                         style={{ opacity: activeTab === 'overview' ? 1 : 0.6 }}
                     >
                         Overview
+                    </Button>
+                    <Button 
+                        onClick={() => setActiveTab('credits')}
+                        style={{ opacity: activeTab === 'credits' ? 1 : 0.6 }}
+                    >
+                        Credits
                     </Button>
                     <Button 
                         onClick={() => setActiveTab('invoices')}
@@ -229,6 +242,74 @@ export default () => {
                             </tbody>
                         </Table>
                     </Card>
+                )}
+
+                {/* Credits Tab */}
+                {activeTab === 'credits' && (
+                    <>
+                        <Card>
+                            <CardTitle>
+                                <DollarSign size={24} />
+                                Your Credits
+                            </CardTitle>
+                            <div className="flex items-center justify-between mb-6 p-6 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(0, 52, 204, 0.3) 0%, rgba(0, 102, 255, 0.2) 100%)', border: '2px solid rgba(0, 102, 255, 0.4)' }}>
+                                <div>
+                                    <p className="text-neutral-400 mb-2">Available Credits</p>
+                                    <p className="text-6xl font-bold text-white">{userCredits}</p>
+                                    <p className="text-neutral-300 mt-2">Worth ${(userCredits / 10).toFixed(2)} (10 credits = $1.00)</p>
+                                </div>
+                                <Button>
+                                    Apply to Invoice
+                                </Button>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4 mb-6">
+                                <div className="p-4 rounded-lg" style={{ backgroundColor: 'rgba(0, 41, 102, 0.3)', border: '1px solid rgba(0, 102, 255, 0.3)' }}>
+                                    <p className="text-neutral-400 text-sm mb-2">Earn Credits</p>
+                                    <p className="text-white font-bold text-lg mb-2">Refer a Friend</p>
+                                    <p className="text-neutral-300 text-sm mb-3">Get 100 credits ($10) for each friend who signs up</p>
+                                    <Button css="width: 100%;">
+                                        Get Referral Link
+                                    </Button>
+                                </div>
+                                <div className="p-4 rounded-lg" style={{ backgroundColor: 'rgba(0, 41, 102, 0.3)', border: '1px solid rgba(0, 102, 255, 0.3)' }}>
+                                    <p className="text-neutral-400 text-sm mb-2">Your Referral Code</p>
+                                    <p className="text-white font-bold text-2xl mb-2">GAME2024</p>
+                                    <p className="text-neutral-300 text-sm mb-3">0 friends referred so far</p>
+                                    <Button css="width: 100%;">
+                                        Copy Link
+                                    </Button>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card>
+                            <CardTitle>
+                                <CheckCircle size={24} />
+                                Credit History
+                            </CardTitle>
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <Th>Date</Th>
+                                        <Th>Type</Th>
+                                        <Th>Description</Th>
+                                        <Th>Amount</Th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {mockCreditHistory.map(credit => (
+                                        <tr key={credit.id}>
+                                            <Td>{credit.date}</Td>
+                                            <Td className="font-semibold text-white">{credit.type}</Td>
+                                            <Td className="text-neutral-400">{credit.description}</Td>
+                                            <Td className={credit.amount.startsWith('+') ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+                                                {credit.amount}
+                                            </Td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </Card>
+                    </>
                 )}
 
                 {/* Split Billing Tab */}
