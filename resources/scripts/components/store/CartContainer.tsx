@@ -162,6 +162,16 @@ interface LocationData {
     node_count: number;
 }
 
+interface EggData {
+    id: number;
+    uuid: string;
+    name: string;
+    description: string | null;
+    nest_id: number;
+    nest_name: string;
+    docker_images: Record<string, string>;
+}
+
 const PRICING = {
     base: 5,
     ramPerGB: 2,
@@ -169,43 +179,78 @@ const PRICING = {
     slotsPer10: 1,
 };
 
-const GAMES = [
-    { id: 'minecraft', name: 'Minecraft', icon: '🎮', description: 'Java & Bedrock Edition' },
-    { id: 'cs2', name: 'Counter-Strike 2', icon: '🔫', description: 'Competitive FPS' },
-    { id: 'rust', name: 'Rust', icon: '🏚️', description: 'Survival Game' },
-    { id: 'valheim', name: 'Valheim', icon: '⚔️', description: 'Viking Survival' },
-];
-
 export default () => {
     const history = useHistory();
     const user = useStoreState((state) => state.user.data);
     
-    const [gameType, setGameType] = useState('minecraft');
+    const [gameType, setGameType] = useState<number | null>(null);
     const [ram, setRam] = useState(2);
     const [storage, setStorage] = useState(5);
     const [slots, setSlots] = useState(20);
     const [location, setLocation] = useState<number | null>(null);
     const [locations, setLocations] = useState<LocationData[]>([]);
+    const [eggs, setEggs] = useState<EggData[]>([]);
     const [loading, setLoading] = useState(true);
     const [canCheckout, setCanCheckout] = useState(false);
+    const [maxRam, setMaxRam] = useState(32);
+    const [maxStorage, setMaxStorage] = useState(100);
     
     useEffect(() => {
-        // Fetch real locations from API
-        http.get('/api/client/store/locations')
-            .then(({ data }) => {
-                setLocations(data.data);
+        // Fetch real locations and eggs from API
+        Promise.all([
+            http.get('/api/client/store/locations'),
+            http.get('/api/client/store/eggs'),
+        ])
+            .then(([locationsRes, eggsRes]) => {
+                setLocations(locationsRes.data.data);
+                setEggs(eggsRes.data.data);
+                
                 // Auto-select first available location
-                const firstAvailable = data.data.find((loc: LocationData) => loc.available);
+                const firstAvailable = locationsRes.data.data.find((loc: LocationData) => loc.available);
                 if (firstAvailable) {
                     setLocation(firstAvailable.id);
+                    updateMaxResources(firstAvailable);
                 }
+                
+                // Auto-select first egg
+                if (eggsRes.data.data.length > 0) {
+                    setGameType(eggsRes.data.data[0].id);
+                }
+                
                 setLoading(false);
             })
             .catch(error => {
-                console.error('Failed to fetch locations:', error);
+                console.error('Failed to fetch data:', error);
                 setLoading(false);
             });
     }, []);
+    
+    const updateMaxResources = (loc: LocationData) => {
+        // Set max RAM and storage based on location's available capacity
+        const maxAvailableRam = Math.floor(loc.capacity.memory.available / 1024);
+        const maxAvailableStorage = Math.floor(loc.capacity.disk.available / 1024);
+        
+        setMaxRam(Math.min(maxAvailableRam, 32)); // Cap at 32GB
+        setMaxStorage(Math.min(maxAvailableStorage, 100)); // Cap at 100GB
+        
+        // Adjust current values if they exceed new max
+        if (ram > maxAvailableRam) {
+            setRam(Math.min(2, maxAvailableRam));
+        }
+        if (storage > maxAvailableStorage) {
+            setStorage(Math.min(5, maxAvailableStorage));
+        }
+    };
+    
+    useEffect(() => {
+        // Update max resources when location changes
+        if (location !== null) {
+            const selectedLoc = locations.find(loc => loc.id === location);
+            if (selectedLoc) {
+                updateMaxResources(selectedLoc);
+            }
+        }
+    }, [location]);
     
     useEffect(() => {
         // Check if selected location can accommodate the configuration
@@ -238,6 +283,10 @@ export default () => {
             return;
         }
         
+        if (gameType === null || location === null) {
+            return;
+        }
+        
         // Store cart data in localStorage
         const cartItem: CartItem = {
             gameType,
@@ -251,6 +300,8 @@ export default () => {
         
         history.push('/checkout');
     };
+    
+    const selectedEgg = eggs.find(egg => egg.id === gameType);
 
     return (
         <PageContentBlock title={'Order Server'} showFlashKey={'cart'}>
@@ -263,19 +314,33 @@ export default () => {
                     
                     {/* Game Type Selection */}
                     <Label>SELECT GAME TYPE</Label>
-                    <Grid css={tw`mb-6`}>
-                        {GAMES.map(game => (
-                            <OptionCard
-                                key={game.id}
-                                selected={gameType === game.id}
-                                onClick={() => setGameType(game.id)}
+                    {loading ? (
+                        <div css={tw`flex justify-center py-12`}>
+                            <Spinner size="large" />
+                        </div>
+                    ) : (
+                        <div css={tw`mb-6`}>
+                            <select
+                                value={gameType || ''}
+                                onChange={(e) => setGameType(parseInt(e.target.value))}
+                                css={tw`w-full p-4 rounded-lg text-white font-semibold text-lg`}
+                                style={{
+                                    backgroundColor: 'rgba(0, 52, 204, 0.3)',
+                                    border: '2px solid rgba(0, 102, 255, 0.4)',
+                                }}
                             >
-                                <div css={tw`text-3xl mb-2`}>{game.icon}</div>
-                                <div css={tw`text-white font-bold text-lg`}>{game.name}</div>
-                                <div css={tw`text-neutral-400 text-sm`}>{game.description}</div>
-                            </OptionCard>
-                        ))}
-                    </Grid>
+                                <option value="" disabled>Choose a game server...</option>
+                                {eggs.map(egg => (
+                                    <option key={egg.id} value={egg.id} style={{ backgroundColor: '#001433', color: 'white' }}>
+                                        {egg.name} {egg.nest_name && `(${egg.nest_name})`}
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedEgg && selectedEgg.description && (
+                                <p css={tw`mt-2 text-sm text-neutral-400`}>{selectedEgg.description}</p>
+                            )}
+                        </div>
+                    )}
                     
                     {/* Server Configuration */}
                     <Label>SERVER RESOURCES</Label>
@@ -289,7 +354,7 @@ export default () => {
                             <Slider
                                 type="range"
                                 min="1"
-                                max="32"
+                                max={maxRam}
                                 value={ram}
                                 onChange={(e) => setRam(parseInt(e.target.value))}
                             />
@@ -307,7 +372,7 @@ export default () => {
                             <Slider
                                 type="range"
                                 min="5"
-                                max="100"
+                                max={maxStorage}
                                 step="5"
                                 value={storage}
                                 onChange={(e) => setStorage(parseInt(e.target.value))}

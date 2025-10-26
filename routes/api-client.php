@@ -23,6 +23,7 @@ Route::get('/permissions', [Client\ClientController::class, 'permissions']);
 Route::prefix('/store')->withoutMiddleware(['auth:sanctum', RequireTwoFactorAuthentication::class])->group(function () {
     Route::get('/locations', [Client\Store\LocationController::class, 'index'])->name('api:client.store.locations');
     Route::post('/locations/{location}/check', [Client\Store\LocationController::class, 'checkAvailability'])->name('api:client.store.locations.check');
+    Route::get('/eggs', [Client\Store\EggController::class, 'index'])->name('api:client.store.eggs');
 });
 
 Route::prefix('/account')->middleware(AccountSubject::class)->group(function () {
