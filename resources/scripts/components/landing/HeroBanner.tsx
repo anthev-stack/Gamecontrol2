@@ -136,7 +136,7 @@ const HeroBanner: React.FC = () => {
                             <SlideDetail dangerouslySetInnerHTML={{ 
                                 __html: slide.detail.replace(/GAMECONTROL25/g, '<span>GAMECONTROL25</span>').replace(/25%/g, '<span>25%</span>')
                             }} />
-                            <CTAButton to="/auth/login">
+                            <CTAButton to="/cart">
                                 {slide.cta}
                             </CTAButton>
                         </TextContent>

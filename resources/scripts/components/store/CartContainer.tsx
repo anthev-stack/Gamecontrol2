@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import tw from 'twin.macro';
 import styled from 'styled-components/macro';
@@ -181,13 +181,20 @@ const PRICING = {
 
 export default () => {
     const history = useHistory();
+    const location = useLocation();
     const user = useStoreState((state) => state.user.data);
     
+    // Parse query parameters
+    const searchParams = new URLSearchParams(location.search);
+    const preselectedGame = searchParams.get('game');
+    const preselectedRam = searchParams.get('ram');
+    const preselectedStorage = searchParams.get('storage');
+    
     const [gameType, setGameType] = useState<number | null>(null);
-    const [ram, setRam] = useState(2);
-    const [storage, setStorage] = useState(5);
+    const [ram, setRam] = useState(preselectedRam ? parseInt(preselectedRam) : 2);
+    const [storage, setStorage] = useState(preselectedStorage ? parseInt(preselectedStorage) : 5);
     const [slots, setSlots] = useState(20);
-    const [location, setLocation] = useState<number | null>(null);
+    const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
     const [locations, setLocations] = useState<LocationData[]>([]);
     const [eggs, setEggs] = useState<EggData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -208,12 +215,24 @@ export default () => {
                 // Auto-select first available location
                 const firstAvailable = locationsRes.data.data.find((loc: LocationData) => loc.available);
                 if (firstAvailable) {
-                    setLocation(firstAvailable.id);
+                    setSelectedLocation(firstAvailable.id);
                     updateMaxResources(firstAvailable);
                 }
                 
-                // Auto-select first egg
-                if (eggsRes.data.data.length > 0) {
+                // Check if there's a preselected game from URL
+                if (preselectedGame && eggsRes.data.data.length > 0) {
+                    // Try to find egg by name (case-insensitive partial match)
+                    const matchedEgg = eggsRes.data.data.find((egg: EggData) => 
+                        egg.name.toLowerCase().includes(preselectedGame.toLowerCase())
+                    );
+                    if (matchedEgg) {
+                        setGameType(matchedEgg.id);
+                    } else {
+                        // Fallback to first egg
+                        setGameType(eggsRes.data.data[0].id);
+                    }
+                } else if (eggsRes.data.data.length > 0) {
+                    // Auto-select first egg if no preselection
                     setGameType(eggsRes.data.data[0].id);
                 }
                 
@@ -244,18 +263,18 @@ export default () => {
     
     useEffect(() => {
         // Update max resources when location changes
-        if (location !== null) {
-            const selectedLoc = locations.find(loc => loc.id === location);
-            if (selectedLoc) {
-                updateMaxResources(selectedLoc);
+        if (selectedLocation !== null) {
+            const loc = locations.find(l => l.id === selectedLocation);
+            if (loc) {
+                updateMaxResources(loc);
             }
         }
-    }, [location]);
+    }, [selectedLocation]);
     
     useEffect(() => {
         // Check if selected location can accommodate the configuration
-        if (location !== null) {
-            http.post(`/api/client/store/locations/${location}/check`, {
+        if (selectedLocation !== null) {
+            http.post(`/api/client/store/locations/${selectedLocation}/check`, {
                 ram,
                 storage,
             })
@@ -266,7 +285,7 @@ export default () => {
                     setCanCheckout(false);
                 });
         }
-    }, [location, ram, storage]);
+    }, [selectedLocation, ram, storage]);
     
     const calculatePrice = () => {
         const ramCost = ram * PRICING.ramPerGB;
@@ -283,7 +302,7 @@ export default () => {
             return;
         }
         
-        if (gameType === null || location === null) {
+        if (gameType === null || selectedLocation === null) {
             return;
         }
         
@@ -293,7 +312,7 @@ export default () => {
             ram,
             storage,
             slots,
-            location,
+            location: selectedLocation,
         };
         localStorage.setItem('cartItem', JSON.stringify(cartItem));
         localStorage.setItem('cartPrice', monthlyPrice.toString());
@@ -413,9 +432,9 @@ export default () => {
                             {locations.map(loc => (
                                 <OptionCard
                                     key={loc.id}
-                                    selected={location === loc.id}
+                                    selected={selectedLocation === loc.id}
                                     disabled={!loc.available}
-                                    onClick={() => loc.available && setLocation(loc.id)}
+                                    onClick={() => loc.available && setSelectedLocation(loc.id)}
                                 >
                                     <div css={tw`flex items-center justify-between mb-3`}>
                                         <div>
@@ -423,7 +442,7 @@ export default () => {
                                             <div css={tw`text-neutral-400 text-sm`}>{loc.long}</div>
                                         </div>
                                         {loc.available ? (
-                                            <CheckCircle size={24} style={{ color: location === loc.id ? '#0066ff' : '#22c55e' }} />
+                                            <CheckCircle size={24} style={{ color: selectedLocation === loc.id ? '#0066ff' : '#22c55e' }} />
                                         ) : (
                                             <AlertCircle size={24} style={{ color: '#ef4444' }} />
                                         )}
@@ -484,12 +503,12 @@ export default () => {
                     <Button 
                         onClick={handleCheckout} 
                         css={tw`w-full mt-6 justify-center`}
-                        disabled={!canCheckout || location === null}
+                        disabled={!canCheckout || selectedLocation === null}
                     >
                         <ShoppingCart size={20} />
                         {user ? 'Proceed to Checkout' : 'Login to Checkout'}
                     </Button>
-                    {!canCheckout && location !== null && (
+                    {!canCheckout && selectedLocation !== null && (
                         <p css={tw`text-xs text-center text-red-400 mt-3`}>
                             ⚠️ Selected location doesn't have enough resources for this configuration
                         </p>

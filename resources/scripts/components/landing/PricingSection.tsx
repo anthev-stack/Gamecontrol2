@@ -118,7 +118,7 @@ const PricingSection: React.FC = () => {
                             <Feature>DDoS Protection</Feature>
                             <Feature>Automatic Backups</Feature>
                         </FeatureList>
-                        <OrderButton to="/cart">
+                        <OrderButton to="/cart?game=minecraft&ram=2&storage=10">
                             Order Now
                         </OrderButton>
                     </PricingCard>
@@ -141,7 +141,7 @@ const PricingSection: React.FC = () => {
                             <Feature>Anti-Cheat Ready</Feature>
                             <Feature>24/7 Support</Feature>
                         </FeatureList>
-                        <OrderButton to="/cart">
+                        <OrderButton to="/cart?game=counter-strike&ram=4&storage=20">
                             Order Now
                         </OrderButton>
                     </PricingCard>
@@ -163,7 +163,7 @@ const PricingSection: React.FC = () => {
                             <Feature>Wipe Management</Feature>
                             <Feature>Priority Support</Feature>
                         </FeatureList>
-                        <OrderButton to="/cart">
+                        <OrderButton to="/cart?game=rust&ram=6&storage=30">
                             Order Now
                         </OrderButton>
                     </PricingCard>

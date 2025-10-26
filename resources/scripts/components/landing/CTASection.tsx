@@ -69,8 +69,8 @@ const CTASection: React.FC = () => {
                         </ContactItem>
                     </ContactInfo>
                 </Content>
-                <OrderButton to="/auth/login">
-                    ORDER NOW →
+                <OrderButton to="/cart">
+                    CREATE YOUR SERVER →
                 </OrderButton>
             </Container>
         </Section>
