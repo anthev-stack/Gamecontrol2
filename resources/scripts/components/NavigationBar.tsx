@@ -26,10 +26,12 @@ const RightNavigation = styled.div<{ $isOpen?: boolean }>`
     & > button,
     & > .navigation-link,
     & > div {
-        ${tw`flex items-center h-full no-underline text-neutral-300 px-6 cursor-pointer transition-all duration-150`};
-
+        ${tw`flex items-center no-underline text-neutral-300 px-6 cursor-pointer transition-colors duration-150`};
+        height: 100%;
+        
         @media (max-width: 768px) {
-            ${tw`h-auto py-4 border-b`};
+            ${tw`py-4 border-b`};
+            height: auto;
             border-color: rgba(0, 102, 255, 0.2);
             justify-content: flex-start;
         }
@@ -37,7 +39,14 @@ const RightNavigation = styled.div<{ $isOpen?: boolean }>`
         &:active,
         &:hover {
             ${tw`text-neutral-100`};
-            background-color: rgba(0, 52, 204, 0.3);
+            
+            @media (min-width: 769px) {
+                background-color: rgba(0, 10, 26, 0.5);
+            }
+            
+            @media (max-width: 768px) {
+                background-color: rgba(0, 52, 204, 0.3);
+            }
         }
 
         &:active,
