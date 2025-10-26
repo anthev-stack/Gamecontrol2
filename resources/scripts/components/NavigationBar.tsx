@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Layers, Settings, LogOut } from 'lucide-react';
+import { Layers, Settings, LogOut, Menu, X } from 'lucide-react';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import SearchContainer from '@/components/dashboard/search/SearchContainer';
@@ -12,11 +12,24 @@ import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import Avatar from '@/components/Avatar';
 
-const RightNavigation = styled.div`
+const RightNavigation = styled.div<{ $isOpen?: boolean }>`
+    ${tw`flex h-full items-center justify-center`};
+    
+    @media (max-width: 768px) {
+        ${tw`fixed top-14 left-0 right-0 flex-col items-stretch bg-neutral-900 shadow-lg transition-all duration-300`};
+        ${props => props.$isOpen ? tw`max-h-screen` : tw`max-h-0 overflow-hidden`};
+        background-color: #000a1a;
+        z-index: 50;
+    }
+    
     & > a,
     & > button,
     & > .navigation-link {
         ${tw`flex items-center h-full no-underline text-neutral-300 px-6 cursor-pointer transition-all duration-150`};
+
+        @media (max-width: 768px) {
+            ${tw`h-auto py-4 border-b border-neutral-700`};
+        }
 
         &:active,
         &:hover {
@@ -28,6 +41,14 @@ const RightNavigation = styled.div`
         &.active {
             box-shadow: inset 0 -2px ${theme`colors.cyan.600`.toString()};
         }
+    }
+`;
+
+const MobileMenuButton = styled.button`
+    ${tw`md:hidden flex items-center text-neutral-300 px-4 cursor-pointer`};
+    
+    &:hover {
+        ${tw`text-neutral-100`};
     }
 `;
 
@@ -48,6 +69,7 @@ export default () => {
     const user = useStoreState((state: ApplicationStore) => state.user.data);
     const rootAdmin = user?.rootAdmin || false;
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const onTriggerLogout = () => {
         setIsLoggingOut(true);
@@ -71,7 +93,12 @@ export default () => {
                         {name}
                     </Link>
                 </div>
-                <RightNavigation className={'flex h-full items-center justify-center'}>
+                {user && (
+                    <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </MobileMenuButton>
+                )}
+                <RightNavigation $isOpen={mobileMenuOpen}>
                     {user ? (
                         <>
                             <SearchContainer />
