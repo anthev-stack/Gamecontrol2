@@ -385,11 +385,11 @@ export default () => {
         }
     }, [selectedLocation, ram, storage]);
     
-    const getPricingForGame = () => {
-        if (!selectedEgg) return GAME_PRICING['default'];
+    const getPricingForGame = (egg: EggData | undefined): GamePricing => {
+        if (!egg) return GAME_PRICING['default'];
         
         // Try to match game name to pricing config
-        const gameName = selectedEgg.name.toLowerCase();
+        const gameName = egg.name.toLowerCase();
         
         // Check for exact or partial matches
         for (const [key, pricing] of Object.entries(GAME_PRICING)) {
@@ -402,7 +402,8 @@ export default () => {
     };
     
     const calculatePrice = () => {
-        const pricing = getPricingForGame();
+        const selectedEgg = eggs.find(egg => egg.id === gameType);
+        const pricing = getPricingForGame(selectedEgg);
         
         let totalPrice = pricing.base;
         
@@ -450,7 +451,7 @@ export default () => {
     };
     
     const selectedEgg = eggs.find(egg => egg.id === gameType);
-    const currentPricing = getPricingForGame();
+    const currentPricing = getPricingForGame(selectedEgg);
 
     return (
         <PageContentBlock title={'Order Server'} showFlashKey={'cart'}>
