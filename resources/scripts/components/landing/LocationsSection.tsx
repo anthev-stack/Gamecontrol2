@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 
 const Section = styled.section`
     ${tw`py-20 px-4 relative`};
-    background-color: #001433;
+    background-color: #000a1a;
     
     &::before {
         content: '';
