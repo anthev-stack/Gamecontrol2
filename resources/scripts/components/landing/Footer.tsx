@@ -13,6 +13,41 @@ const Container = styled.div`
     ${tw`max-w-7xl mx-auto`};
 `;
 
+const TopSection = styled.div`
+    ${tw`mb-12 pb-8 border-b border-neutral-700`};
+`;
+
+const Logo = styled.div`
+    ${tw`text-3xl font-bold mb-4`};
+    color: #0066ff;
+`;
+
+const Tagline = styled.p`
+    ${tw`text-neutral-400 mb-6`};
+`;
+
+const SocialLinks = styled.div`
+    ${tw`flex gap-4 mb-4`};
+`;
+
+const SocialLink = styled.a`
+    ${tw`text-2xl transition-all duration-200`};
+    color: #0066ff;
+    
+    &:hover {
+        color: #0052cc;
+        transform: scale(1.1);
+    }
+`;
+
+const TrustScore = styled.div`
+    ${tw`text-sm`};
+`;
+
+const Stars = styled.span`
+    ${tw`text-yellow-400 mr-2`};
+`;
+
 const Grid = styled.div`
     ${tw`grid md:grid-cols-4 gap-8 mb-8`};
 `;
@@ -22,7 +57,8 @@ const Column = styled.div`
 `;
 
 const ColumnTitle = styled.h4`
-    ${tw`text-lg font-bold mb-4 text-white`};
+    ${tw`text-lg font-bold mb-4`};
+    color: #0066ff;
 `;
 
 const LinkList = styled.ul`
@@ -30,21 +66,41 @@ const LinkList = styled.ul`
 `;
 
 const FooterLink = styled(Link)`
-    ${tw`text-neutral-300 hover:text-white transition-colors duration-200 block`};
+    ${tw`text-neutral-300 hover:text-white transition-colors duration-200 block text-sm`};
 `;
 
 const ExternalLink = styled.a`
-    ${tw`text-neutral-300 hover:text-white transition-colors duration-200 block`};
+    ${tw`text-neutral-300 hover:text-white transition-colors duration-200 block text-sm`};
 `;
 
 const BottomBar = styled.div`
-    ${tw`pt-8 border-t border-neutral-700 text-center text-neutral-400`};
+    ${tw`pt-8 border-t border-neutral-700 text-center text-neutral-400 text-sm`};
 `;
 
 const Footer: React.FC = () => {
     return (
         <FooterContainer>
             <Container>
+                <TopSection>
+                    <Logo>GAMECONTROL</Logo>
+                    <Tagline>Premium Game Server Hosting Since 2025</Tagline>
+                    <SocialLinks>
+                        <SocialLink href="https://discord.gg/your-server" target="_blank" title="Discord">
+                            💬
+                        </SocialLink>
+                        <SocialLink href="https://twitter.com/your-handle" target="_blank" title="Twitter">
+                            🐦
+                        </SocialLink>
+                        <SocialLink href="https://facebook.com/your-page" target="_blank" title="Facebook">
+                            📘
+                        </SocialLink>
+                    </SocialLinks>
+                    <TrustScore>
+                        <Stars>★★★★★</Stars>
+                        <span className="text-white font-semibold">Excellent</span> | 250 reviews
+                    </TrustScore>
+                </TopSection>
+                
                 <Grid>
                     {/* Games */}
                     <Column>
