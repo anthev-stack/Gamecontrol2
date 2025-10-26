@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCogs, faLayerGroup, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Layers, Settings, LogOut } from 'lucide-react';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import SearchContainer from '@/components/dashboard/search/SearchContainer';
@@ -78,13 +77,13 @@ export default () => {
                             <SearchContainer />
                             <Tooltip placement={'bottom'} content={'Server Dashboard'}>
                                 <NavLink to={'/servers'}>
-                                    <FontAwesomeIcon icon={faLayerGroup} />
+                                    <Layers size={20} />
                                 </NavLink>
                             </Tooltip>
                             {rootAdmin && (
                                 <Tooltip placement={'bottom'} content={'Admin Panel'}>
                                     <a href={'/admin'} rel={'noreferrer'}>
-                                        <FontAwesomeIcon icon={faCogs} />
+                                        <Settings size={20} />
                                     </a>
                                 </Tooltip>
                             )}
@@ -97,7 +96,7 @@ export default () => {
                             </Tooltip>
                             <Tooltip placement={'bottom'} content={'Sign Out'}>
                                 <button onClick={onTriggerLogout}>
-                                    <FontAwesomeIcon icon={faSignOutAlt} />
+                                    <LogOut size={20} />
                                 </button>
                             </Tooltip>
                         </>

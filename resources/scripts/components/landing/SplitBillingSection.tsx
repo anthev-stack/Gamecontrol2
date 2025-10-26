@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDollarSign, faUserFriends, faCreditCard, faGamepad } from '@fortawesome/free-solid-svg-icons';
+import { DollarSign, UserPlus, CreditCard, Gamepad2 } from 'lucide-react';
 
 const Section = styled.section`
     ${tw`py-20 px-4`};
@@ -57,7 +56,7 @@ const SplitBillingSection: React.FC = () => {
         <Section>
             <Container>
                 <Content>
-                    <Icon><FontAwesomeIcon icon={faDollarSign} /></Icon>
+                    <Icon><DollarSign size={64} /></Icon>
                     <Title>Split Cost Billing</Title>
                     <Description>
                         Play with friends and split the server cost! Invite your teammates, divide the bill fairly, 
@@ -66,21 +65,21 @@ const SplitBillingSection: React.FC = () => {
                     
                     <FeatureGrid>
                         <Feature>
-                            <FeatureTitle><FontAwesomeIcon icon={faUserFriends} className="mr-2" /> Easy Sharing</FeatureTitle>
+                            <FeatureTitle><UserPlus size={20} className="mr-2" style={{ display: 'inline-block' }} /> Easy Sharing</FeatureTitle>
                             <FeatureDescription>
                                 Invite friends by email and set custom split percentages (50/50, 60/40, etc.)
                             </FeatureDescription>
                         </Feature>
 
                         <Feature>
-                            <FeatureTitle><FontAwesomeIcon icon={faCreditCard} className="mr-2" /> Auto-Billing</FeatureTitle>
+                            <FeatureTitle><CreditCard size={20} className="mr-2" style={{ display: 'inline-block' }} /> Auto-Billing</FeatureTitle>
                             <FeatureDescription>
                                 Each person gets charged their share automatically every month
                             </FeatureDescription>
                         </Feature>
 
                         <Feature>
-                            <FeatureTitle><FontAwesomeIcon icon={faGamepad} className="mr-2" /> Full Access</FeatureTitle>
+                            <FeatureTitle><Gamepad2 size={20} className="mr-2" style={{ display: 'inline-block' }} /> Full Access</FeatureTitle>
                             <FeatureDescription>
                                 All contributors get complete server management permissions
                             </FeatureDescription>

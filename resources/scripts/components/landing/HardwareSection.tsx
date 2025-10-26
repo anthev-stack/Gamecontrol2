@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrochip, faHdd, faNetworkWired, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
+import { Cpu, HardDrive, Network, Shield } from 'lucide-react';
 
 const Section = styled.section`
     ${tw`py-20 px-4`};
@@ -70,7 +69,7 @@ const HardwareSection: React.FC = () => {
                 
                 <SpecsGrid>
                     <SpecCard>
-                        <Icon><FontAwesomeIcon icon={faMicrochip} /></Icon>
+                        <Icon><Cpu size={48} /></Icon>
                         <SpecTitle>CPU</SpecTitle>
                         <SpecValue>AMD Ryzen 9</SpecValue>
                         <SpecDescription>
@@ -79,7 +78,7 @@ const HardwareSection: React.FC = () => {
                     </SpecCard>
 
                     <SpecCard>
-                        <Icon><FontAwesomeIcon icon={faHdd} /></Icon>
+                        <Icon><HardDrive size={48} /></Icon>
                         <SpecTitle>Storage</SpecTitle>
                         <SpecValue>NVMe SSD</SpecValue>
                         <SpecDescription>
@@ -88,7 +87,7 @@ const HardwareSection: React.FC = () => {
                     </SpecCard>
 
                     <SpecCard>
-                        <Icon><FontAwesomeIcon icon={faNetworkWired} /></Icon>
+                        <Icon><Network size={48} /></Icon>
                         <SpecTitle>Network</SpecTitle>
                         <SpecValue>10 Gbps</SpecValue>
                         <SpecDescription>
@@ -97,7 +96,7 @@ const HardwareSection: React.FC = () => {
                     </SpecCard>
 
                     <SpecCard>
-                        <Icon><FontAwesomeIcon icon={faShieldAlt} /></Icon>
+                        <Icon><Shield size={48} /></Icon>
                         <SpecTitle>Protection</SpecTitle>
                         <SpecValue>DDoS Shield</SpecValue>
                         <SpecDescription>

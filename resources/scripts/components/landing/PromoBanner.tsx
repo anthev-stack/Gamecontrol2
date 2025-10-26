@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBolt } from '@fortawesome/free-solid-svg-icons';
+import { Zap } from 'lucide-react';
 
 const Banner = styled.div`
     ${tw`w-full py-2 px-4 text-center text-sm font-medium`};
@@ -22,7 +21,7 @@ const PromoCode = styled.span`
 const PromoBanner: React.FC = () => {
     return (
         <Banner>
-            <FontAwesomeIcon icon={faBolt} className="mr-2" />
+            <Zap size={16} style={{ display: 'inline-block', marginRight: '8px' }} />
             <PromoText>Get 25% off your first month with promo code</PromoText>
             <PromoCode>GAMECONTROL25</PromoCode>
         </Banner>

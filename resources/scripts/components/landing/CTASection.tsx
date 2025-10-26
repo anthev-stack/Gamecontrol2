@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faComments } from '@fortawesome/free-solid-svg-icons';
+import { Mail, MessageCircle } from 'lucide-react';
 
 const Section = styled.section`
     ${tw`py-16 px-4`};
@@ -61,11 +60,11 @@ const CTASection: React.FC = () => {
                     <Subtitle>Not sure if this is right for you? Contact Us!</Subtitle>
                     <ContactInfo>
                         <ContactItem href="mailto:support@gamecontrol.com">
-                            <FontAwesomeIcon icon={faEnvelope} />
+                            <Mail size={24} />
                             <span>Contact Us</span>
                         </ContactItem>
                         <ContactItem href="https://discord.gg/your-server" target="_blank">
-                            <FontAwesomeIcon icon={faComments} />
+                            <MessageCircle size={24} />
                             <span>Sales Live Chat</span>
                         </ContactItem>
                     </ContactInfo>
