@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 
 const Section = styled.section`
     ${tw`py-20 px-4`};
-    background-color: rgba(0, 10, 26, 0.5);
+    background-color: #000a1a;
 `;
 
 const Container = styled.div`

@@ -5,8 +5,7 @@ export default createGlobalStyle`
     body {
         ${tw`font-sans text-neutral-200`};
         letter-spacing: 0.015em;
-        background: linear-gradient(135deg, #001433 0%, #0052cc 50%, #0066ff 100%);
-        background-attachment: fixed;
+        background-color: #000a1a;
         min-height: 100vh;
     }
     

@@ -5,7 +5,7 @@ import tw from 'twin.macro';
 
 const FooterContainer = styled.footer`
     ${tw`py-12 px-4 border-t`};
-    background-color: rgba(0, 10, 26, 0.9);
+    background-color: #000a1a;
     border-top: 1px solid rgba(0, 102, 255, 0.3);
 `;
 

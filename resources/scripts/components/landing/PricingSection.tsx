@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 const Section = styled.section`
     ${tw`py-20 px-4`};
+    background-color: #001433;
 `;
 
 const Container = styled.div`

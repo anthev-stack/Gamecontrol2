@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 
 const Section = styled.section`
     ${tw`py-20 px-4 relative`};
-    background: linear-gradient(135deg, rgba(0, 10, 26, 0.8) 0%, rgba(0, 41, 102, 0.6) 100%);
+    background-color: #001433;
     
     &::before {
         content: '';
