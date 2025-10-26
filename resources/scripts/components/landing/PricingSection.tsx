@@ -118,7 +118,7 @@ const PricingSection: React.FC = () => {
                             <Feature>DDoS Protection</Feature>
                             <Feature>Automatic Backups</Feature>
                         </FeatureList>
-                        <OrderButton to="/auth/login">
+                        <OrderButton to="/cart">
                             Order Now
                         </OrderButton>
                     </PricingCard>
@@ -141,7 +141,7 @@ const PricingSection: React.FC = () => {
                             <Feature>Anti-Cheat Ready</Feature>
                             <Feature>24/7 Support</Feature>
                         </FeatureList>
-                        <OrderButton to="/auth/login">
+                        <OrderButton to="/cart">
                             Order Now
                         </OrderButton>
                     </PricingCard>
@@ -163,7 +163,7 @@ const PricingSection: React.FC = () => {
                             <Feature>Wipe Management</Feature>
                             <Feature>Priority Support</Feature>
                         </FeatureList>
-                        <OrderButton to="/auth/login">
+                        <OrderButton to="/cart">
                             Order Now
                         </OrderButton>
                     </PricingCard>
