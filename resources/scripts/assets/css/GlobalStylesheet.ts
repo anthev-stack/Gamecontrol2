@@ -28,11 +28,12 @@ export default createGlobalStyle`
         }
     }
     
-    /* Override bg-neutral classes to be transparent */
+    /* Remove bg-neutral backgrounds completely */
     .bg-neutral-600,
     .bg-neutral-700,
     .bg-neutral-800,
     .bg-neutral-900 {
+        background: none !important;
         background-color: transparent !important;
     }
     
