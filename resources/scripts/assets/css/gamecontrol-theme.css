@@ -139,7 +139,16 @@ div .icon {
 .fZEUwy,
 .kncYZx,
 .iELGrp,
-[class*="ServerRow___StyledDiv"] {
+[class*="ServerRow___StyledDiv"],
+[class*="ServerRow"] > div > div,
+[class*="GreyRowBox"] > div > div {
+    background: none !important;
+    background-color: transparent !important;
+}
+
+/* Specifically target the stats sections (CPU, RAM, Disk) */
+.flex-1.ml-4,
+[class*="flex-1"] {
     background: none !important;
     background-color: transparent !important;
 }
