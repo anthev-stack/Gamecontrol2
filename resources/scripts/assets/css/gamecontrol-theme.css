@@ -110,10 +110,22 @@ button.bg-blue-500:hover,
     color: inherit;
 }
 
-/* Remove rounded backgrounds from icons */
-[class*="GreyRowBox"] .icon {
+/* Remove rounded backgrounds from icons - aggressive override */
+[class*="GreyRowBox"] .icon,
+a .icon,
+div .icon {
     border: none !important;
     background: none !important;
+    background-color: transparent !important;
+    border-radius: 0 !important;
+}
+
+/* Target the specific icon wrapper */
+.icon.mr-4 {
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
 }
 
 /* Scrollbar with blue theme */
