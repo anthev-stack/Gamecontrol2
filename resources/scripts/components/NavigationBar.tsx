@@ -147,7 +147,7 @@ export default () => {
                                 </NavLink>
                             </ConditionalTooltip>
                             <ConditionalTooltip content="Billing">
-                                <NavLink to={'/account'} onClick={() => setMobileMenuOpen(false)}>
+                                <NavLink to={'/billing'} onClick={() => setMobileMenuOpen(false)}>
                                     <CreditCard size={20} />
                                     <span className="mobile-label">Billing</span>
                                 </NavLink>
