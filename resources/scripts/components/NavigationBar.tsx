@@ -86,6 +86,14 @@ export default () => {
     const rootAdmin = user?.rootAdmin || false;
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    React.useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const onTriggerLogout = () => {
         setIsLoggingOut(true);
@@ -93,6 +101,11 @@ export default () => {
             // @ts-expect-error this is valid
             window.location = '/';
         });
+    };
+    
+    const ConditionalTooltip = ({ children, content }: { children: React.ReactElement; content: string }) => {
+        if (isMobile) return children;
+        return <Tooltip placement={'bottom'} content={content}>{children}</Tooltip>;
     };
 
     return (
@@ -118,38 +131,38 @@ export default () => {
                     {user ? (
                         <>
                             <SearchContainer />
-                            <Tooltip placement={'bottom'} content={'Server Dashboard'}>
+                            <ConditionalTooltip content="Server Dashboard">
                                 <NavLink to={'/servers'} onClick={() => setMobileMenuOpen(false)}>
                                     <Layers size={20} />
                                     <span className="mobile-label">Dashboard</span>
                                 </NavLink>
-                            </Tooltip>
-                            <Tooltip placement={'bottom'} content={'Billing'}>
+                            </ConditionalTooltip>
+                            <ConditionalTooltip content="Billing">
                                 <NavLink to={'/account'} onClick={() => setMobileMenuOpen(false)}>
                                     <CreditCard size={20} />
                                     <span className="mobile-label">Billing</span>
                                 </NavLink>
-                            </Tooltip>
+                            </ConditionalTooltip>
                             {rootAdmin && (
-                                <Tooltip placement={'bottom'} content={'Admin Panel'}>
+                                <ConditionalTooltip content="Admin Panel">
                                     <a href={'/admin'} rel={'noreferrer'}>
                                         <Settings size={20} />
                                         <span className="mobile-label">Admin</span>
                                     </a>
-                                </Tooltip>
+                                </ConditionalTooltip>
                             )}
-                            <Tooltip placement={'bottom'} content={'Account Settings'}>
+                            <ConditionalTooltip content="Account Settings">
                                 <NavLink to={'/account'} onClick={() => setMobileMenuOpen(false)}>
                                     <User size={20} />
                                     <span className="mobile-label">Account</span>
                                 </NavLink>
-                            </Tooltip>
-                            <Tooltip placement={'bottom'} content={'Sign Out'}>
+                            </ConditionalTooltip>
+                            <ConditionalTooltip content="Sign Out">
                                 <button onClick={() => { onTriggerLogout(); setMobileMenuOpen(false); }}>
                                     <LogOut size={20} />
                                     <span className="mobile-label">Sign Out</span>
                                 </button>
-                            </Tooltip>
+                            </ConditionalTooltip>
                         </>
                     ) : (
                         <div className={'flex items-center px-4'}>
