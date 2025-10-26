@@ -1,4 +1,4 @@
-@import './gamecontrol-theme.css';
+@import './css/gamecontrol-theme.css';
 
 @tailwind base;
 @tailwind components;
