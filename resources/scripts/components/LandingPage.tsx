@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import PromoBanner from './landing/PromoBanner';
+import SecondaryNav from './landing/SecondaryNav';
 import HeroBanner from './landing/HeroBanner';
 import PricingSection from './landing/PricingSection';
 import FeaturesSection from './landing/FeaturesSection';
@@ -21,6 +22,7 @@ const LandingPage = () => {
     return (
         <Container>
             <PromoBanner />
+            <SecondaryNav />
             <HeroBanner />
             <PricingSection />
             <ReviewsSection />
