@@ -3,8 +3,10 @@ import { useHistory } from 'react-router-dom';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import tw from 'twin.macro';
 import styled from 'styled-components/macro';
-import { Server, HardDrive, Users, MapPin, ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
+import { Server, HardDrive, Users, MapPin, ShoppingCart, Trash2, Plus, Minus, AlertCircle, CheckCircle } from 'lucide-react';
 import { useStoreState } from 'easy-peasy';
+import http from '@/api/http';
+import Spinner from '@/components/elements/Spinner';
 
 const Container = styled.div`
     ${tw`space-y-6`};
@@ -29,14 +31,16 @@ const Grid = styled.div`
     ${tw`grid md:grid-cols-2 gap-6`};
 `;
 
-const OptionCard = styled.div<{ selected?: boolean }>`
-    ${tw`p-4 rounded-lg cursor-pointer transition-all duration-300 border-2`};
-    background-color: ${props => props.selected ? 'rgba(0, 52, 204, 0.3)' : 'rgba(0, 52, 204, 0.1)'};
-    border-color: ${props => props.selected ? '#0066ff' : 'rgba(0, 102, 255, 0.2)'};
+const OptionCard = styled.div<{ selected?: boolean; disabled?: boolean }>`
+    ${tw`p-4 rounded-lg transition-all duration-300 border-2`};
+    background-color: ${props => props.disabled ? 'rgba(100, 100, 100, 0.1)' : props.selected ? 'rgba(0, 52, 204, 0.3)' : 'rgba(0, 52, 204, 0.1)'};
+    border-color: ${props => props.disabled ? 'rgba(100, 100, 100, 0.2)' : props.selected ? '#0066ff' : 'rgba(0, 102, 255, 0.2)'};
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+    opacity: ${props => props.disabled ? 0.5 : 1};
     
     &:hover {
-        background-color: rgba(0, 52, 204, 0.25);
-        border-color: rgba(0, 102, 255, 0.4);
+        background-color: ${props => props.disabled ? 'rgba(100, 100, 100, 0.1)' : 'rgba(0, 52, 204, 0.25)'};
+        border-color: ${props => props.disabled ? 'rgba(100, 100, 100, 0.2)' : 'rgba(0, 102, 255, 0.4)'};
     }
 `;
 
@@ -132,7 +136,30 @@ interface CartItem {
     ram: number;
     storage: number;
     slots: number;
-    location: string;
+    location: number;
+}
+
+interface LocationData {
+    id: number;
+    short: string;
+    long: string;
+    available: boolean;
+    reason?: string;
+    capacity: {
+        memory: {
+            total: number;
+            used: number;
+            available: number;
+            percentage: number;
+        };
+        disk: {
+            total: number;
+            used: number;
+            available: number;
+            percentage: number;
+        };
+    };
+    node_count: number;
 }
 
 const PRICING = {
@@ -149,13 +176,6 @@ const GAMES = [
     { id: 'valheim', name: 'Valheim', icon: '⚔️', description: 'Viking Survival' },
 ];
 
-const LOCATIONS = [
-    { id: 'us-east', name: 'US East', flag: '🇺🇸', ping: '20ms' },
-    { id: 'us-west', name: 'US West', flag: '🇺🇸', ping: '45ms' },
-    { id: 'eu-central', name: 'EU Central', flag: '🇪🇺', ping: '80ms' },
-    { id: 'asia-pacific', name: 'Asia Pacific', flag: '🌏', ping: '120ms' },
-];
-
 export default () => {
     const history = useHistory();
     const user = useStoreState((state) => state.user.data);
@@ -164,7 +184,44 @@ export default () => {
     const [ram, setRam] = useState(2);
     const [storage, setStorage] = useState(5);
     const [slots, setSlots] = useState(20);
-    const [location, setLocation] = useState('us-east');
+    const [location, setLocation] = useState<number | null>(null);
+    const [locations, setLocations] = useState<LocationData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [canCheckout, setCanCheckout] = useState(false);
+    
+    useEffect(() => {
+        // Fetch real locations from API
+        http.get('/api/client/store/locations')
+            .then(({ data }) => {
+                setLocations(data.data);
+                // Auto-select first available location
+                const firstAvailable = data.data.find((loc: LocationData) => loc.available);
+                if (firstAvailable) {
+                    setLocation(firstAvailable.id);
+                }
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Failed to fetch locations:', error);
+                setLoading(false);
+            });
+    }, []);
+    
+    useEffect(() => {
+        // Check if selected location can accommodate the configuration
+        if (location !== null) {
+            http.post(`/api/client/store/locations/${location}/check`, {
+                ram,
+                storage,
+            })
+                .then(({ data }) => {
+                    setCanCheckout(data.available);
+                })
+                .catch(() => {
+                    setCanCheckout(false);
+                });
+        }
+    }, [location, ram, storage]);
     
     const calculatePrice = () => {
         const ramCost = ram * PRICING.ramPerGB;
@@ -282,24 +339,56 @@ export default () => {
                     
                     {/* Location Selection */}
                     <Label>SELECT LOCATION</Label>
-                    <Grid>
-                        {LOCATIONS.map(loc => (
-                            <OptionCard
-                                key={loc.id}
-                                selected={location === loc.id}
-                                onClick={() => setLocation(loc.id)}
-                            >
-                                <div css={tw`flex items-center justify-between`}>
-                                    <div>
-                                        <div css={tw`text-2xl mb-1`}>{loc.flag}</div>
-                                        <div css={tw`text-white font-bold`}>{loc.name}</div>
-                                        <div css={tw`text-neutral-400 text-sm`}>Latency: {loc.ping}</div>
+                    {loading ? (
+                        <div css={tw`flex justify-center py-12`}>
+                            <Spinner size="large" />
+                        </div>
+                    ) : (
+                        <Grid>
+                            {locations.map(loc => (
+                                <OptionCard
+                                    key={loc.id}
+                                    selected={location === loc.id}
+                                    disabled={!loc.available}
+                                    onClick={() => loc.available && setLocation(loc.id)}
+                                >
+                                    <div css={tw`flex items-center justify-between mb-3`}>
+                                        <div>
+                                            <div css={tw`text-white font-bold text-lg mb-1`}>{loc.short}</div>
+                                            <div css={tw`text-neutral-400 text-sm`}>{loc.long}</div>
+                                        </div>
+                                        {loc.available ? (
+                                            <CheckCircle size={24} style={{ color: location === loc.id ? '#0066ff' : '#22c55e' }} />
+                                        ) : (
+                                            <AlertCircle size={24} style={{ color: '#ef4444' }} />
+                                        )}
                                     </div>
-                                    <MapPin size={24} style={{ color: location === loc.id ? '#0066ff' : '#666' }} />
-                                </div>
-                            </OptionCard>
-                        ))}
-                    </Grid>
+                                    {loc.available ? (
+                                        <div css={tw`space-y-1`}>
+                                            <div css={tw`flex justify-between text-xs`}>
+                                                <span css={tw`text-neutral-400`}>RAM</span>
+                                                <span css={tw`text-neutral-300`}>
+                                                    {Math.floor(loc.capacity.memory.available / 1024)} GB free
+                                                </span>
+                                            </div>
+                                            <div css={tw`flex justify-between text-xs`}>
+                                                <span css={tw`text-neutral-400`}>Storage</span>
+                                                <span css={tw`text-neutral-300`}>
+                                                    {Math.floor(loc.capacity.disk.available / 1024)} GB free
+                                                </span>
+                                            </div>
+                                            <div css={tw`flex justify-between text-xs`}>
+                                                <span css={tw`text-neutral-400`}>Nodes</span>
+                                                <span css={tw`text-neutral-300`}>{loc.node_count} active</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div css={tw`text-red-400 text-xs`}>{loc.reason}</div>
+                                    )}
+                                </OptionCard>
+                            ))}
+                        </Grid>
+                    )}
                 </Card>
                 
                 {/* Price Summary */}
@@ -327,10 +416,19 @@ export default () => {
                             <TotalPrice>${monthlyPrice.toFixed(2)}/mo</TotalPrice>
                         </div>
                     </div>
-                    <Button onClick={handleCheckout} css={tw`w-full mt-6 justify-center`}>
+                    <Button 
+                        onClick={handleCheckout} 
+                        css={tw`w-full mt-6 justify-center`}
+                        disabled={!canCheckout || location === null}
+                    >
                         <ShoppingCart size={20} />
                         {user ? 'Proceed to Checkout' : 'Login to Checkout'}
                     </Button>
+                    {!canCheckout && location !== null && (
+                        <p css={tw`text-xs text-center text-red-400 mt-3`}>
+                            ⚠️ Selected location doesn't have enough resources for this configuration
+                        </p>
+                    )}
                     {!user && (
                         <p css={tw`text-xs text-center text-neutral-400 mt-3`}>
                             You'll need to sign in or create an account to complete your order
