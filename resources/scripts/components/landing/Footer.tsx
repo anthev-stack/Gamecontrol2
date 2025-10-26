@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDiscord, faTwitter, faFacebook } from '@fortawesome/free-brands-svg-icons';
+import { faComments, faRetweet, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 const FooterContainer = styled.footer`
     ${tw`py-12 px-4 border-t`};
@@ -88,13 +88,13 @@ const Footer: React.FC = () => {
                     <Tagline>Premium Game Server Hosting Since 2025</Tagline>
                     <SocialLinks>
                         <SocialLink href="https://discord.gg/your-server" target="_blank" title="Discord">
-                            <FontAwesomeIcon icon={faDiscord} />
+                            <FontAwesomeIcon icon={faComments} />
                         </SocialLink>
                         <SocialLink href="https://twitter.com/your-handle" target="_blank" title="Twitter">
-                            <FontAwesomeIcon icon={faTwitter} />
+                            <FontAwesomeIcon icon={faRetweet} />
                         </SocialLink>
                         <SocialLink href="https://facebook.com/your-page" target="_blank" title="Facebook">
-                            <FontAwesomeIcon icon={faFacebook} />
+                            <FontAwesomeIcon icon={faThumbsUp} />
                         </SocialLink>
                     </SocialLinks>
                     <TrustScore>
