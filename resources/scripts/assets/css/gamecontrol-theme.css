@@ -94,10 +94,12 @@ button.bg-blue-500:hover,
 /* Remove ALL styling from internal elements */
 [class*="GreyRowBox"] div,
 [class*="GreyRowBox"] span,
-[class*="GreyRowBox"] p {
+[class*="GreyRowBox"] p,
+[class*="GreyRowBox"] .icon {
     background: none !important;
     background-color: transparent !important;
     border: none !important;
+    border-radius: 0 !important;
     transform: none !important;
     box-shadow: none !important;
     transition: none !important;
@@ -106,6 +108,12 @@ button.bg-blue-500:hover,
 /* Ensure text and icons remain visible */
 [class*="GreyRowBox"] * {
     color: inherit;
+}
+
+/* Remove rounded backgrounds from icons */
+[class*="GreyRowBox"] .icon {
+    border: none !important;
+    background: none !important;
 }
 
 /* Scrollbar with blue theme */
