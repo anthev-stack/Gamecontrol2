@@ -132,7 +132,7 @@ const TotalPrice = styled.div`
 `;
 
 interface CartItem {
-    gameType: string;
+    gameType: number;
     ram: number;
     storage: number;
     slots: number;
