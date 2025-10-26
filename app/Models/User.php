@@ -251,6 +251,22 @@ class User extends Model implements
     }
 
     /**
+     * Get the user's credit account.
+     */
+    public function credits(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UserCredit::class);
+    }
+
+    /**
+     * Get the user's credit transactions.
+     */
+    public function creditTransactions(): HasMany
+    {
+        return $this->hasMany(CreditTransaction::class);
+    }
+
+    /**
      * Returns all the activity logs where this user is the subject — not to
      * be confused by activity logs where this user is the _actor_.
      */

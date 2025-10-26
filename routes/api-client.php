@@ -50,6 +50,10 @@ Route::prefix('/account')->middleware(AccountSubject::class)->group(function () 
     });
 });
 
+Route::prefix('/billing')->middleware(AccountSubject::class)->group(function () {
+    Route::get('/credits', [Client\Billing\CreditController::class, 'index'])->name('api:client.billing.credits');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Client Control API

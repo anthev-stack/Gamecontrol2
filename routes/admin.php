@@ -98,6 +98,18 @@ Route::group(['prefix' => 'users'], function () {
 
 /*
 |--------------------------------------------------------------------------
+| Credit Management Controller Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/credits
+|
+*/
+Route::group(['prefix' => 'credits'], function () {
+    Route::get('/', [Admin\Credits\CreditController::class, 'index'])->name('admin.credits');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Server Controller Routes
 |--------------------------------------------------------------------------
 |

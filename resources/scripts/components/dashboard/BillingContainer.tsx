@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import tw from 'twin.macro';
 import styled from 'styled-components/macro';
 import { CreditCard, Download, DollarSign, Calendar, CheckCircle, Clock, Users } from 'lucide-react';
+import getCredits, { CreditData } from '@/api/billing/getCredits';
+import Spinner from '@/components/elements/Spinner';
 
 const Container = styled.div`
     ${tw`space-y-6`};
@@ -92,7 +94,23 @@ const SplitBillingCard = styled.div`
 
 export default () => {
     const [activeTab, setActiveTab] = useState<'overview' | 'invoices' | 'split' | 'credits'>('overview');
-    const [userCredits] = useState(250); // Mock: 250 credits = $25.00
+    const [creditData, setCreditData] = useState<CreditData | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getCredits()
+            .then((data) => {
+                setCreditData(data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error('Failed to fetch credits:', error);
+                setLoading(false);
+            });
+    }, []);
+
+    const userCredits = creditData?.credits || 0;
+    const dollarValue = creditData?.dollar_value || 0;
 
     const mockInvoices = [
         { id: 'INV-001', date: '2025-10-01', amount: '$15.00', status: 'paid' as const, description: 'Monthly Hosting - Minecraft Server' },
@@ -106,11 +124,15 @@ export default () => {
         { id: 2, serverName: 'CS2 SERVER', partner: 'sarah@example.com', yourShare: '60%', amount: '$4.80', status: 'Active' },
     ];
 
-    const mockCreditHistory = [
-        { id: 1, date: '2025-10-20', type: 'Referral Bonus', amount: '+100', description: 'Friend signed up using your code' },
-        { id: 2, date: '2025-10-15', type: 'Admin Grant', amount: '+150', description: 'Giveaway winner' },
-        { id: 3, date: '2025-10-01', type: 'Payment Applied', amount: '-50', description: 'Applied to October invoice' },
-    ];
+    if (loading) {
+        return (
+            <PageContentBlock title={'Billing & Payments'} showFlashKey={'billing'}>
+                <div className="flex items-center justify-center" style={{ minHeight: '400px' }}>
+                    <Spinner size="large" />
+                </div>
+            </PageContentBlock>
+        );
+    }
 
     return (
         <PageContentBlock title={'Billing & Payments'} showFlashKey={'billing'}>
@@ -119,7 +141,7 @@ export default () => {
                 <Grid>
                     <StatCard>
                         <StatValue>{userCredits}</StatValue>
-                        <StatLabel>Credits (${(userCredits / 10).toFixed(2)} value)</StatLabel>
+                        <StatLabel>Credits (${dollarValue.toFixed(2)} value)</StatLabel>
                     </StatCard>
                     <StatCard>
                         <StatValue>$15.00</StatValue>
@@ -256,7 +278,7 @@ export default () => {
                                 <div>
                                     <p className="text-neutral-400 mb-2">Available Credits</p>
                                     <p className="text-6xl font-bold text-white">{userCredits}</p>
-                                    <p className="text-neutral-300 mt-2">Worth ${(userCredits / 10).toFixed(2)} (10 credits = $1.00)</p>
+                                    <p className="text-neutral-300 mt-2">Worth ${dollarValue.toFixed(2)} (10 credits = $1.00)</p>
                                 </div>
                                 <Button>
                                     Apply to Invoice
@@ -293,19 +315,33 @@ export default () => {
                                         <Th>Type</Th>
                                         <Th>Description</Th>
                                         <Th>Amount</Th>
+                                        {creditData && creditData.transactions.some(t => t.admin) && <Th>Admin</Th>}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {mockCreditHistory.map(credit => (
-                                        <tr key={credit.id}>
-                                            <Td>{credit.date}</Td>
-                                            <Td className="font-semibold text-white">{credit.type}</Td>
-                                            <Td className="text-neutral-400">{credit.description}</Td>
-                                            <Td className={credit.amount.startsWith('+') ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
-                                                {credit.amount}
+                                    {creditData && creditData.transactions.length > 0 ? (
+                                        creditData.transactions.map(transaction => (
+                                            <tr key={transaction.id}>
+                                                <Td>{new Date(transaction.created_at).toLocaleDateString()}</Td>
+                                                <Td className="font-semibold text-white capitalize">{transaction.type.replace('_', ' ')}</Td>
+                                                <Td className="text-neutral-400">{transaction.description || 'No description'}</Td>
+                                                <Td className={transaction.amount > 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>
+                                                    {transaction.amount > 0 ? '+' : ''}{transaction.amount} ({transaction.amount > 0 ? '+' : ''}${transaction.dollar_value.toFixed(2)})
+                                                </Td>
+                                                {creditData.transactions.some(t => t.admin) && (
+                                                    <Td className="text-neutral-400 text-sm">
+                                                        {transaction.admin ? transaction.admin.username : '-'}
+                                                    </Td>
+                                                )}
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <Td colSpan={4} className="text-center text-neutral-500 py-8">
+                                                No credit transactions yet
                                             </Td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </Table>
                         </Card>

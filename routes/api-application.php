@@ -21,6 +21,11 @@ Route::group(['prefix' => '/users'], function () {
     Route::patch('/{user:id}', [Application\Users\UserController::class, 'update']);
 
     Route::delete('/{user:id}', [Application\Users\UserController::class, 'delete']);
+    
+    // Credit Management
+    Route::get('/{user:id}/credits', [Application\Credits\UserCreditController::class, 'show'])->name('api.application.users.credits');
+    Route::post('/{user:id}/credits', [Application\Credits\UserCreditController::class, 'store'])->name('api.application.users.credits.add');
+    Route::delete('/{user:id}/credits', [Application\Credits\UserCreditController::class, 'destroy'])->name('api.application.users.credits.remove');
 });
 
 /*
