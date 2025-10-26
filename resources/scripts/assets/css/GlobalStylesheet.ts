@@ -28,19 +28,18 @@ export default createGlobalStyle`
         }
     }
     
-    /* Add transparency to content blocks */
-    [class*="ContentBox"], 
-    [class*="TitledGreyBox"],
-    [class*="GreyRowBox"],
+    /* Override bg-neutral classes to be transparent */
+    .bg-neutral-600,
     .bg-neutral-700,
     .bg-neutral-800,
     .bg-neutral-900 {
-        background-color: rgba(15, 23, 42, 0.75) !important;
-        backdrop-filter: blur(10px);
+        background-color: transparent !important;
     }
     
-    .bg-neutral-600 {
-        background-color: rgba(30, 41, 59, 0.75) !important;
+    /* Add transparency to content blocks */
+    [class*="ContentBox"], 
+    [class*="TitledGreyBox"] {
+        background-color: rgba(15, 23, 42, 0.75) !important;
         backdrop-filter: blur(10px);
     }
 

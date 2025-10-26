@@ -58,7 +58,7 @@ export default () => {
     };
 
     return (
-        <div className={'w-full shadow-md overflow-x-auto'} style={{ backgroundColor: '#000a1a' }}>
+        <div className={'w-full shadow-md overflow-x-auto'} style={{ backgroundColor: '#000a1a', position: 'relative', zIndex: 10 }}>
             <SpinnerOverlay visible={isLoggingOut} />
             <div className={'mx-auto w-full flex items-center h-[3.5rem] max-w-[1200px]'}>
                 <div id={'logo'} className={'flex-1'}>
