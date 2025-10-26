@@ -172,15 +172,18 @@ interface EggData {
     docker_images: Record<string, string>;
 }
 
-// Game-specific pricing configurations based on industry standards
-const GAME_PRICING: Record<string, {
+// Game-specific pricing type definition
+interface GamePricing {
     base: number;
     ramPerGB: number;
     storagePerGB: number;
     slotsPer10: number;
-    pricePerSlot?: number; // For slot-based pricing
+    pricePerSlot?: number;
     pricingModel: 'resource' | 'slot' | 'hybrid';
-}> = {
+}
+
+// Game-specific pricing configurations based on industry standards
+const GAME_PRICING: Record<string, GamePricing> = {
     // Minecraft - Slot-based pricing (most common)
     'minecraft': {
         base: 0,
