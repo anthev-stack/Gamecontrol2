@@ -2,15 +2,18 @@ import React from 'react';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar';
 import DashboardContainer from '@/components/dashboard/DashboardContainer';
+import LandingPage from '@/components/LandingPage';
 import { NotFound } from '@/components/elements/ScreenBlock';
 import TransitionRouter from '@/TransitionRouter';
 import SubNavigation from '@/components/elements/SubNavigation';
 import { useLocation } from 'react-router';
 import Spinner from '@/components/elements/Spinner';
 import routes from '@/routers/routes';
+import { useStoreState } from 'easy-peasy';
 
 export default () => {
     const location = useLocation();
+    const user = useStoreState((state) => state.user.data);
 
     return (
         <>
@@ -32,6 +35,9 @@ export default () => {
                 <React.Suspense fallback={<Spinner centered />}>
                     <Switch location={location}>
                         <Route path={'/'} exact>
+                            {user ? <LandingPage /> : <LandingPage />}
+                        </Route>
+                        <Route path={'/servers'} exact>
                             <DashboardContainer />
                         </Route>
                         {routes.account.map(({ path, component: Component }) => (
