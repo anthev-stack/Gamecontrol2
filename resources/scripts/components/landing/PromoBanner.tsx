@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBolt } from '@fortawesome/free-solid-svg-icons';
 
 const Banner = styled.div`
     ${tw`w-full py-2 px-4 text-center text-sm font-medium`};
@@ -20,7 +22,8 @@ const PromoCode = styled.span`
 const PromoBanner: React.FC = () => {
     return (
         <Banner>
-            ⚡ <PromoText>Get 25% off your first month with promo code</PromoText>
+            <FontAwesomeIcon icon={faBolt} className="mr-2" />
+            <PromoText>Get 25% off your first month with promo code</PromoText>
             <PromoCode>GAMECONTROL25</PromoCode>
         </Banner>
     );

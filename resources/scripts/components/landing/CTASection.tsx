@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faComments } from '@fortawesome/free-solid-svg-icons';
 
 const Section = styled.section`
     ${tw`py-16 px-4`};
@@ -31,8 +33,8 @@ const ContactInfo = styled.div`
 const ContactItem = styled.a`
     ${tw`flex items-center gap-3 text-white hover:text-neutral-100 transition-colors duration-200`};
     
-    svg, span.icon {
-        ${tw`text-2xl`};
+    svg {
+        ${tw`text-xl`};
     }
 `;
 
@@ -59,11 +61,11 @@ const CTASection: React.FC = () => {
                     <Subtitle>Not sure if this is right for you? Contact Us!</Subtitle>
                     <ContactInfo>
                         <ContactItem href="mailto:support@gamecontrol.com">
-                            <span className="icon">✉️</span>
+                            <FontAwesomeIcon icon={faEnvelope} />
                             <span>Contact Us</span>
                         </ContactItem>
                         <ContactItem href="https://discord.gg/your-server" target="_blank">
-                            <span className="icon">💬</span>
+                            <FontAwesomeIcon icon={faComments} />
                             <span>Sales Live Chat</span>
                         </ContactItem>
                     </ContactInfo>

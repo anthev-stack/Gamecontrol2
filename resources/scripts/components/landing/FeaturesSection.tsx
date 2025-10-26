@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTerminal, faFolder, faChartLine, faClock, faUsers, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Section = styled.section`
     ${tw`py-20 px-4`};
@@ -40,6 +42,7 @@ const FeatureCard = styled.div`
 
 const Icon = styled.div`
     ${tw`text-5xl mb-4`};
+    color: #0066ff;
 `;
 
 const Title = styled.h3`
@@ -59,7 +62,7 @@ const FeaturesSection: React.FC = () => {
                 
                 <Grid>
                     <FeatureCard>
-                        <Icon>🖥️</Icon>
+                        <Icon><FontAwesomeIcon icon={faTerminal} /></Icon>
                         <Title>Web-Based Console</Title>
                         <Description>
                             Access your server console from anywhere with real-time command execution and log viewing.
@@ -67,7 +70,7 @@ const FeaturesSection: React.FC = () => {
                     </FeatureCard>
 
                     <FeatureCard>
-                        <Icon>📁</Icon>
+                        <Icon><FontAwesomeIcon icon={faFolder} /></Icon>
                         <Title>File Manager</Title>
                         <Description>
                             Upload, download, edit, and manage your server files directly through the browser.
@@ -75,7 +78,7 @@ const FeaturesSection: React.FC = () => {
                     </FeatureCard>
 
                     <FeatureCard>
-                        <Icon>📊</Icon>
+                        <Icon><FontAwesomeIcon icon={faChartLine} /></Icon>
                         <Title>Resource Monitoring</Title>
                         <Description>
                             Real-time CPU, RAM, and disk usage graphs to keep track of your server's performance.
@@ -83,7 +86,7 @@ const FeaturesSection: React.FC = () => {
                     </FeatureCard>
 
                     <FeatureCard>
-                        <Icon>⏰</Icon>
+                        <Icon><FontAwesomeIcon icon={faClock} /></Icon>
                         <Title>Task Scheduler</Title>
                         <Description>
                             Automate server restarts, backups, and commands with cron-based scheduling.
@@ -91,7 +94,7 @@ const FeaturesSection: React.FC = () => {
                     </FeatureCard>
 
                     <FeatureCard>
-                        <Icon>👥</Icon>
+                        <Icon><FontAwesomeIcon icon={faUsers} /></Icon>
                         <Title>User Management</Title>
                         <Description>
                             Grant specific permissions to team members without sharing full admin access.
@@ -99,7 +102,7 @@ const FeaturesSection: React.FC = () => {
                     </FeatureCard>
 
                     <FeatureCard>
-                        <Icon>🔐</Icon>
+                        <Icon><FontAwesomeIcon icon={faShieldAlt} /></Icon>
                         <Title>Secure SFTP Access</Title>
                         <Description>
                             Transfer files securely using SFTP with per-user authentication and permissions.

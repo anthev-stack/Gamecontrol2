@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrochip, faHdd, faNetworkWired, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Section = styled.section`
     ${tw`py-20 px-4`};
@@ -40,6 +42,7 @@ const SpecCard = styled.div`
 
 const Icon = styled.div`
     ${tw`text-5xl mb-3`};
+    color: #0066ff;
 `;
 
 const SpecTitle = styled.h4`
@@ -67,7 +70,7 @@ const HardwareSection: React.FC = () => {
                 
                 <SpecsGrid>
                     <SpecCard>
-                        <Icon>🖥️</Icon>
+                        <Icon><FontAwesomeIcon icon={faMicrochip} /></Icon>
                         <SpecTitle>CPU</SpecTitle>
                         <SpecValue>AMD Ryzen 9</SpecValue>
                         <SpecDescription>
@@ -76,7 +79,7 @@ const HardwareSection: React.FC = () => {
                     </SpecCard>
 
                     <SpecCard>
-                        <Icon>💾</Icon>
+                        <Icon><FontAwesomeIcon icon={faHdd} /></Icon>
                         <SpecTitle>Storage</SpecTitle>
                         <SpecValue>NVMe SSD</SpecValue>
                         <SpecDescription>
@@ -85,7 +88,7 @@ const HardwareSection: React.FC = () => {
                     </SpecCard>
 
                     <SpecCard>
-                        <Icon>🌐</Icon>
+                        <Icon><FontAwesomeIcon icon={faNetworkWired} /></Icon>
                         <SpecTitle>Network</SpecTitle>
                         <SpecValue>10 Gbps</SpecValue>
                         <SpecDescription>
@@ -94,7 +97,7 @@ const HardwareSection: React.FC = () => {
                     </SpecCard>
 
                     <SpecCard>
-                        <Icon>🛡️</Icon>
+                        <Icon><FontAwesomeIcon icon={faShieldAlt} /></Icon>
                         <SpecTitle>Protection</SpecTitle>
                         <SpecValue>DDoS Shield</SpecValue>
                         <SpecDescription>

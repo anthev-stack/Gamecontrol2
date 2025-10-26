@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCube, faCrosshairs, faHammer } from '@fortawesome/free-solid-svg-icons';
 
 const Section = styled.section`
     ${tw`py-20 px-4`};
@@ -48,6 +50,7 @@ const FeaturedBadge = styled.div`
 
 const GameIcon = styled.div`
     ${tw`text-6xl mb-4 text-center`};
+    color: #0066ff;
 `;
 
 const GameTitle = styled.h3`
@@ -101,7 +104,7 @@ const PricingSection: React.FC = () => {
                 <PricingGrid>
                     {/* Minecraft */}
                     <PricingCard>
-                        <GameIcon>🎮</GameIcon>
+                        <GameIcon><FontAwesomeIcon icon={faCube} /></GameIcon>
                         <GameTitle>Minecraft</GameTitle>
                         <Price>
                             <PriceAmount>$5</PriceAmount>
@@ -124,7 +127,7 @@ const PricingSection: React.FC = () => {
                     {/* Counter-Strike 2 - Featured */}
                     <PricingCard featured>
                         <FeaturedBadge>MOST POPULAR</FeaturedBadge>
-                        <GameIcon>🔫</GameIcon>
+                        <GameIcon><FontAwesomeIcon icon={faCrosshairs} /></GameIcon>
                         <GameTitle>Counter-Strike 2</GameTitle>
                         <Price>
                             <PriceAmount>$8</PriceAmount>
@@ -146,7 +149,7 @@ const PricingSection: React.FC = () => {
 
                     {/* Rust */}
                     <PricingCard>
-                        <GameIcon>⚙️</GameIcon>
+                        <GameIcon><FontAwesomeIcon icon={faHammer} /></GameIcon>
                         <GameTitle>Rust</GameTitle>
                         <Price>
                             <PriceAmount>$12</PriceAmount>

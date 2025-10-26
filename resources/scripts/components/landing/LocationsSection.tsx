@@ -45,7 +45,8 @@ const LocationCard = styled.div`
 `;
 
 const FlagIcon = styled.div`
-    ${tw`text-6xl mb-3`};
+    ${tw`text-5xl mb-3`};
+    color: #0066ff;
 `;
 
 const LocationName = styled.h4`
