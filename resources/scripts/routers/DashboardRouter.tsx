@@ -35,14 +35,14 @@ export default () => {
                 <React.Suspense fallback={<Spinner centered />}>
                     <Switch location={location}>
                         <Route path={'/'} exact>
-                            {user ? <LandingPage /> : <LandingPage />}
+                            <LandingPage />
                         </Route>
                         <Route path={'/servers'} exact>
-                            <DashboardContainer />
+                            {user ? <DashboardContainer /> : <LandingPage />}
                         </Route>
                         {routes.account.map(({ path, component: Component }) => (
                             <Route key={path} path={`/account/${path}`.replace('//', '/')} exact>
-                                <Component />
+                                {user ? <Component /> : <LandingPage />}
                             </Route>
                         ))}
                         <Route path={'*'}>
