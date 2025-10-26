@@ -73,19 +73,28 @@ button.bg-blue-500:hover,
     background: linear-gradient(135deg, #003d99 0%, #0052cc 100%);
 }
 
-/* Server cards and rows */
+/* Server cards and rows - only transparent background, remove solid */
+[class*="GreyRowBox"],
 [class*="ServerRow"],
 [class*="server-row"] {
-    background-color: rgba(15, 23, 42, 0.7) !important;
-    backdrop-filter: blur(8px);
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    border: 1px solid rgba(0, 102, 255, 0.2) !important;
 }
 
+[class*="GreyRowBox"]:hover,
 [class*="ServerRow"]:hover,
 [class*="server-row"]:hover {
-    background-color: rgba(0, 52, 204, 0.2) !important;
+    background-color: rgba(0, 52, 204, 0.3) !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+    border-color: rgba(0, 102, 255, 0.5) !important;
+}
+
+/* Remove the solid background from GreyRowBox */
+.bg-neutral-700 {
+    background-color: transparent !important;
 }
 
 /* Scrollbar with blue theme */

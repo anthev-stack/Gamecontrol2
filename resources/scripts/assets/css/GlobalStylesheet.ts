@@ -9,6 +9,25 @@ export default createGlobalStyle`
         min-height: 100vh;
     }
     
+    /* Apply network pattern background to servers page */
+    body:has([data-page="servers"]) {
+        position: relative;
+        
+        &::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            background-image: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h60v60H0z" fill="none"/><path d="M30 0L0 30l30 30 30-30L30 0z" fill="%230066ff" opacity="0.1"/></svg>');
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+    }
+    
     /* Add transparency to content blocks */
     [class*="ContentBox"], 
     [class*="TitledGreyBox"],
