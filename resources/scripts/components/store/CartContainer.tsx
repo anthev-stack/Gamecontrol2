@@ -172,11 +172,106 @@ interface EggData {
     docker_images: Record<string, string>;
 }
 
-const PRICING = {
-    base: 5,
-    ramPerGB: 2,
-    storagePerGB: 0.5,
-    slotsPer10: 1,
+// Game-specific pricing configurations based on industry standards
+const GAME_PRICING: Record<string, {
+    base: number;
+    ramPerGB: number;
+    storagePerGB: number;
+    slotsPer10: number;
+    pricePerSlot?: number; // For slot-based pricing
+    pricingModel: 'resource' | 'slot' | 'hybrid';
+}> = {
+    // Minecraft - Slot-based pricing (most common)
+    'minecraft': {
+        base: 0,
+        ramPerGB: 0,
+        storagePerGB: 0,
+        slotsPer10: 0,
+        pricePerSlot: 0.50, // $0.50 per player slot
+        pricingModel: 'slot',
+    },
+    // Rust - High resource needs, flat resource pricing
+    'rust': {
+        base: 8,
+        ramPerGB: 2.5,
+        storagePerGB: 0.30,
+        slotsPer10: 0,
+        pricingModel: 'resource',
+    },
+    // Counter-Strike (CS:GO, CS2) - Slot-based with base
+    'counter-strike': {
+        base: 5,
+        ramPerGB: 1.5,
+        storagePerGB: 0.20,
+        slotsPer10: 0,
+        pricePerSlot: 0.30,
+        pricingModel: 'hybrid',
+    },
+    'cs:go': {
+        base: 5,
+        ramPerGB: 1.5,
+        storagePerGB: 0.20,
+        slotsPer10: 0,
+        pricePerSlot: 0.30,
+        pricingModel: 'hybrid',
+    },
+    'csgo': {
+        base: 5,
+        ramPerGB: 1.5,
+        storagePerGB: 0.20,
+        slotsPer10: 0,
+        pricePerSlot: 0.30,
+        pricingModel: 'hybrid',
+    },
+    // ARK - Very resource intensive
+    'ark': {
+        base: 12,
+        ramPerGB: 3,
+        storagePerGB: 0.50,
+        slotsPer10: 0,
+        pricingModel: 'resource',
+    },
+    // Valheim - Medium requirements
+    'valheim': {
+        base: 6,
+        ramPerGB: 2,
+        storagePerGB: 0.25,
+        slotsPer10: 0.50,
+        pricingModel: 'resource',
+    },
+    // Terraria - Light requirements
+    'terraria': {
+        base: 3,
+        ramPerGB: 1,
+        storagePerGB: 0.15,
+        slotsPer10: 0.25,
+        pricingModel: 'resource',
+    },
+    // Garry's Mod - Source engine
+    'gmod': {
+        base: 4,
+        ramPerGB: 1.5,
+        storagePerGB: 0.20,
+        slotsPer10: 0,
+        pricePerSlot: 0.25,
+        pricingModel: 'hybrid',
+    },
+    "garry's mod": {
+        base: 4,
+        ramPerGB: 1.5,
+        storagePerGB: 0.20,
+        slotsPer10: 0,
+        pricePerSlot: 0.25,
+        pricingModel: 'hybrid',
+    },
+    // Default fallback pricing
+    'default': {
+        base: 5,
+        ramPerGB: 2,
+        storagePerGB: 0.40,
+        slotsPer10: 0.50,
+        pricingModel: 'resource',
+    },
 };
 
 export default () => {
@@ -287,11 +382,42 @@ export default () => {
         }
     }, [selectedLocation, ram, storage]);
     
+    const getPricingForGame = () => {
+        if (!selectedEgg) return GAME_PRICING['default'];
+        
+        // Try to match game name to pricing config
+        const gameName = selectedEgg.name.toLowerCase();
+        
+        // Check for exact or partial matches
+        for (const [key, pricing] of Object.entries(GAME_PRICING)) {
+            if (gameName.includes(key.toLowerCase())) {
+                return pricing;
+            }
+        }
+        
+        return GAME_PRICING['default'];
+    };
+    
     const calculatePrice = () => {
-        const ramCost = ram * PRICING.ramPerGB;
-        const storageCost = storage * PRICING.storagePerGB;
-        const slotsCost = Math.floor(slots / 10) * PRICING.slotsPer10;
-        return PRICING.base + ramCost + storageCost + slotsCost;
+        const pricing = getPricingForGame();
+        
+        let totalPrice = pricing.base;
+        
+        // Add resource costs
+        if (pricing.pricingModel === 'resource' || pricing.pricingModel === 'hybrid') {
+            totalPrice += ram * pricing.ramPerGB;
+            totalPrice += storage * pricing.storagePerGB;
+            totalPrice += Math.floor(slots / 10) * pricing.slotsPer10;
+        }
+        
+        // Add slot-based costs
+        if (pricing.pricingModel === 'slot' || pricing.pricingModel === 'hybrid') {
+            if (pricing.pricePerSlot) {
+                totalPrice += slots * pricing.pricePerSlot;
+            }
+        }
+        
+        return Math.max(totalPrice, 1); // Minimum $1/month
     };
     
     const monthlyPrice = calculatePrice();
@@ -321,6 +447,7 @@ export default () => {
     };
     
     const selectedEgg = eggs.find(egg => egg.id === gameType);
+    const currentPricing = getPricingForGame();
 
     return (
         <PageContentBlock title={'Order Server'} showFlashKey={'cart'}>
@@ -330,6 +457,19 @@ export default () => {
                         <Server size={32} />
                         Configure Your Server
                     </Title>
+                    
+                    {/* Pricing Model Info */}
+                    {selectedEgg && (
+                        <div css={tw`mb-4 p-3 rounded-lg`} style={{ backgroundColor: 'rgba(0, 102, 255, 0.1)', border: '1px solid rgba(0, 102, 255, 0.3)' }}>
+                            <p css={tw`text-sm text-neutral-300`}>
+                                <strong css={tw`text-white`}>Pricing Model:</strong>{' '}
+                                {currentPricing.pricingModel === 'slot' && 'Per Player Slot'}
+                                {currentPricing.pricingModel === 'resource' && 'Resource-Based'}
+                                {currentPricing.pricingModel === 'hybrid' && 'Base + Resources + Slots'}
+                                {currentPricing.pricePerSlot && ` ($${currentPricing.pricePerSlot.toFixed(2)} per slot)`}
+                            </p>
+                        </div>
+                    )}
                     
                     {/* Game Type Selection */}
                     <Label>SELECT GAME TYPE</Label>
@@ -378,7 +518,7 @@ export default () => {
                                 onChange={(e) => setRam(parseInt(e.target.value))}
                             />
                             <div css={tw`text-xs text-neutral-400 mt-1`}>
-                                ${PRICING.ramPerGB} / GB
+                                {currentPricing.ramPerGB > 0 ? `$${currentPricing.ramPerGB.toFixed(2)} / GB` : 'Included'}
                             </div>
                         </ConfigCard>
                         
@@ -397,7 +537,7 @@ export default () => {
                                 onChange={(e) => setStorage(parseInt(e.target.value))}
                             />
                             <div css={tw`text-xs text-neutral-400 mt-1`}>
-                                ${PRICING.storagePerGB} / GB
+                                {currentPricing.storagePerGB > 0 ? `$${currentPricing.storagePerGB.toFixed(2)} / GB` : 'Included'}
                             </div>
                         </ConfigCard>
                         
@@ -416,7 +556,12 @@ export default () => {
                                 onChange={(e) => setSlots(parseInt(e.target.value))}
                             />
                             <div css={tw`text-xs text-neutral-400 mt-1`}>
-                                ${PRICING.slotsPer10} / 10 slots
+                                {currentPricing.pricePerSlot 
+                                    ? `$${currentPricing.pricePerSlot.toFixed(2)} / slot` 
+                                    : currentPricing.slotsPer10 > 0 
+                                        ? `$${currentPricing.slotsPer10.toFixed(2)} / 10 slots`
+                                        : 'Included'
+                                }
                             </div>
                         </ConfigCard>
                     </ConfigGrid>
@@ -478,22 +623,35 @@ export default () => {
                 {/* Price Summary */}
                 <PriceCard>
                     <div css={tw`text-white font-bold text-xl mb-4`}>Order Summary</div>
-                    <PriceRow>
-                        <span css={tw`text-neutral-300`}>Base Price</span>
-                        <span css={tw`text-white font-semibold`}>${PRICING.base.toFixed(2)}</span>
-                    </PriceRow>
-                    <PriceRow>
-                        <span css={tw`text-neutral-300`}>RAM ({ram} GB)</span>
-                        <span css={tw`text-white font-semibold`}>${(ram * PRICING.ramPerGB).toFixed(2)}</span>
-                    </PriceRow>
-                    <PriceRow>
-                        <span css={tw`text-neutral-300`}>Storage ({storage} GB)</span>
-                        <span css={tw`text-white font-semibold`}>${(storage * PRICING.storagePerGB).toFixed(2)}</span>
-                    </PriceRow>
-                    <PriceRow css={tw`border-b-0`}>
-                        <span css={tw`text-neutral-300`}>Player Slots ({slots})</span>
-                        <span css={tw`text-white font-semibold`}>${(Math.floor(slots / 10) * PRICING.slotsPer10).toFixed(2)}</span>
-                    </PriceRow>
+                    {currentPricing.base > 0 && (
+                        <PriceRow>
+                            <span css={tw`text-neutral-300`}>Base Price</span>
+                            <span css={tw`text-white font-semibold`}>${currentPricing.base.toFixed(2)}</span>
+                        </PriceRow>
+                    )}
+                    {currentPricing.ramPerGB > 0 && (
+                        <PriceRow>
+                            <span css={tw`text-neutral-300`}>RAM ({ram} GB)</span>
+                            <span css={tw`text-white font-semibold`}>${(ram * currentPricing.ramPerGB).toFixed(2)}</span>
+                        </PriceRow>
+                    )}
+                    {currentPricing.storagePerGB > 0 && (
+                        <PriceRow>
+                            <span css={tw`text-neutral-300`}>Storage ({storage} GB)</span>
+                            <span css={tw`text-white font-semibold`}>${(storage * currentPricing.storagePerGB).toFixed(2)}</span>
+                        </PriceRow>
+                    )}
+                    {currentPricing.pricePerSlot ? (
+                        <PriceRow css={tw`border-b-0`}>
+                            <span css={tw`text-neutral-300`}>Player Slots ({slots})</span>
+                            <span css={tw`text-white font-semibold`}>${(slots * currentPricing.pricePerSlot).toFixed(2)}</span>
+                        </PriceRow>
+                    ) : currentPricing.slotsPer10 > 0 && (
+                        <PriceRow css={tw`border-b-0`}>
+                            <span css={tw`text-neutral-300`}>Player Slots ({slots})</span>
+                            <span css={tw`text-white font-semibold`}>${(Math.floor(slots / 10) * currentPricing.slotsPer10).toFixed(2)}</span>
+                        </PriceRow>
+                    )}
                     <div css={tw`mt-4 pt-4 border-t`} style={{ borderColor: 'rgba(0, 102, 255, 0.3)' }}>
                         <div css={tw`flex justify-between items-center mb-2`}>
                             <span css={tw`text-neutral-300 text-sm`}>Monthly Total</span>
