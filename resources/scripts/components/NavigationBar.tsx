@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Layers, Settings, LogOut, Menu, X } from 'lucide-react';
+import { Layers, Settings, LogOut, Menu, X, CreditCard, User } from 'lucide-react';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import SearchContainer from '@/components/dashboard/search/SearchContainer';
@@ -16,7 +16,7 @@ const RightNavigation = styled.div<{ $isOpen?: boolean }>`
     ${tw`flex h-full items-center justify-center`};
     
     @media (max-width: 768px) {
-        ${tw`fixed top-14 left-0 right-0 flex-col items-stretch bg-neutral-900 shadow-lg transition-all duration-300`};
+        ${tw`fixed top-14 left-0 right-0 flex-col items-stretch shadow-lg transition-all duration-300`};
         ${props => props.$isOpen ? tw`max-h-screen` : tw`max-h-0 overflow-hidden`};
         background-color: #000a1a;
         z-index: 50;
@@ -28,12 +28,26 @@ const RightNavigation = styled.div<{ $isOpen?: boolean }>`
         ${tw`flex items-center h-full no-underline text-neutral-300 px-6 cursor-pointer transition-all duration-150`};
 
         @media (max-width: 768px) {
-            ${tw`h-auto py-4 border-b border-neutral-700`};
+            ${tw`h-auto py-4 border-b`};
+            border-color: rgba(0, 102, 255, 0.2);
+            justify-content: flex-start;
+            
+            /* Show text labels on mobile */
+            span.mobile-label {
+                display: inline-block;
+                margin-left: 12px;
+            }
+        }
+
+        /* Hide text labels on desktop */
+        span.mobile-label {
+            display: none;
         }
 
         &:active,
         &:hover {
-            ${tw`text-neutral-100 bg-black`};
+            ${tw`text-neutral-100`};
+            background-color: rgba(0, 52, 204, 0.3);
         }
 
         &:active,
@@ -101,29 +115,39 @@ export default () => {
                 <RightNavigation $isOpen={mobileMenuOpen}>
                     {user ? (
                         <>
-                            <SearchContainer />
+                            <div className="hidden md:flex">
+                                <SearchContainer />
+                            </div>
                             <Tooltip placement={'bottom'} content={'Server Dashboard'}>
-                                <NavLink to={'/servers'}>
+                                <NavLink to={'/servers'} onClick={() => setMobileMenuOpen(false)}>
                                     <Layers size={20} />
+                                    <span className="mobile-label">Dashboard</span>
+                                </NavLink>
+                            </Tooltip>
+                            <Tooltip placement={'bottom'} content={'Billing'}>
+                                <NavLink to={'/account'} onClick={() => setMobileMenuOpen(false)}>
+                                    <CreditCard size={20} />
+                                    <span className="mobile-label">Billing</span>
                                 </NavLink>
                             </Tooltip>
                             {rootAdmin && (
                                 <Tooltip placement={'bottom'} content={'Admin Panel'}>
                                     <a href={'/admin'} rel={'noreferrer'}>
                                         <Settings size={20} />
+                                        <span className="mobile-label">Admin</span>
                                     </a>
                                 </Tooltip>
                             )}
                             <Tooltip placement={'bottom'} content={'Account Settings'}>
-                                <NavLink to={'/account'}>
-                                    <span className={'flex items-center w-5 h-5'}>
-                                        <Avatar.User />
-                                    </span>
+                                <NavLink to={'/account'} onClick={() => setMobileMenuOpen(false)}>
+                                    <User size={20} />
+                                    <span className="mobile-label">Account</span>
                                 </NavLink>
                             </Tooltip>
                             <Tooltip placement={'bottom'} content={'Sign Out'}>
-                                <button onClick={onTriggerLogout}>
+                                <button onClick={() => { onTriggerLogout(); setMobileMenuOpen(false); }}>
                                     <LogOut size={20} />
+                                    <span className="mobile-label">Sign Out</span>
                                 </button>
                             </Tooltip>
                         </>
