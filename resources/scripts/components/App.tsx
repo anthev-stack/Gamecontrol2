@@ -76,11 +76,11 @@ const App = () => {
                                     </ServerContext.Provider>
                                 </Spinner.Suspense>
                             </AuthenticatedRoute>
-                            <AuthenticatedRoute path={'/'}>
+                            <Route path={'/'}>
                                 <Spinner.Suspense>
                                     <DashboardRouter />
                                 </Spinner.Suspense>
-                            </AuthenticatedRoute>
+                            </Route>
                             <Route path={'*'}>
                                 <NotFound />
                             </Route>
