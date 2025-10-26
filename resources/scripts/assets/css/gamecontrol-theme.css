@@ -128,6 +128,22 @@ div .icon {
     border-radius: 0 !important;
 }
 
+/* Target all ServerRow styled divs - remove backgrounds */
+[class*="ServerRow___Styled"] {
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Target specific middle section that has different color */
+.fZEUwy,
+.kncYZx,
+.iELGrp,
+[class*="ServerRow___StyledDiv"] {
+    background: none !important;
+    background-color: transparent !important;
+}
+
 /* Scrollbar with blue theme */
 ::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 0 1px rgba(66, 153, 255, 0.5), 
