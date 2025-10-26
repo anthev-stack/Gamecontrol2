@@ -79,11 +79,11 @@ button.bg-blue-500:hover,
 [class*="server-row"] {
     background-color: rgba(15, 23, 42, 0.6) !important;
     backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
     border: 1px solid rgba(0, 102, 255, 0.2) !important;
 }
 
-/* Hover only on the container, not internal elements */
+/* Hover only on the container itself */
 [class*="GreyRowBox"]:hover {
     background-color: rgba(0, 52, 204, 0.3) !important;
     transform: translateY(-2px);
@@ -91,16 +91,20 @@ button.bg-blue-500:hover,
     border-color: rgba(0, 102, 255, 0.5) !important;
 }
 
-/* Prevent internal elements from getting hover styling */
-[class*="GreyRowBox"]:hover * {
+/* Remove ALL styling from internal elements */
+[class*="GreyRowBox"] div,
+[class*="GreyRowBox"] span,
+[class*="GreyRowBox"] p {
+    background: none !important;
     background-color: transparent !important;
+    border: none !important;
     transform: none !important;
     box-shadow: none !important;
+    transition: none !important;
 }
 
-/* But allow links and buttons to still have text color hover */
-[class*="GreyRowBox"]:hover a,
-[class*="GreyRowBox"]:hover button {
+/* Ensure text and icons remain visible */
+[class*="GreyRowBox"] * {
     color: inherit;
 }
 
