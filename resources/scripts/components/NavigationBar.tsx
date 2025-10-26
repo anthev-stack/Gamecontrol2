@@ -24,24 +24,14 @@ const RightNavigation = styled.div<{ $isOpen?: boolean }>`
     
     & > a,
     & > button,
-    & > .navigation-link {
+    & > .navigation-link,
+    & > div {
         ${tw`flex items-center h-full no-underline text-neutral-300 px-6 cursor-pointer transition-all duration-150`};
 
         @media (max-width: 768px) {
             ${tw`h-auto py-4 border-b`};
             border-color: rgba(0, 102, 255, 0.2);
             justify-content: flex-start;
-            
-            /* Show text labels on mobile */
-            span.mobile-label {
-                display: inline-block;
-                margin-left: 12px;
-            }
-        }
-
-        /* Hide text labels on desktop */
-        span.mobile-label {
-            display: none;
         }
 
         &:active,
@@ -54,6 +44,18 @@ const RightNavigation = styled.div<{ $isOpen?: boolean }>`
         &:hover,
         &.active {
             box-shadow: inset 0 -2px ${theme`colors.cyan.600`.toString()};
+        }
+    }
+    
+    /* Mobile label styling */
+    span.mobile-label {
+        display: none;
+        
+        @media (max-width: 768px) {
+            display: inline-block !important;
+            margin-left: 12px;
+            color: white;
+            font-size: 16px;
         }
     }
 `;
@@ -115,9 +117,7 @@ export default () => {
                 <RightNavigation $isOpen={mobileMenuOpen}>
                     {user ? (
                         <>
-                            <div className="hidden md:flex">
-                                <SearchContainer />
-                            </div>
+                            <SearchContainer />
                             <Tooltip placement={'bottom'} content={'Server Dashboard'}>
                                 <NavLink to={'/servers'} onClick={() => setMobileMenuOpen(false)}>
                                     <Layers size={20} />
