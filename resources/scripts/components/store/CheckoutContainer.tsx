@@ -173,8 +173,7 @@ export default () => {
         setError('');
 
         try {
-            // Create the server
-            const response = await http.post('/api/client/store/servers', {
+            const requestData = {
                 name: serverName,
                 egg_id: cartItem.gameType,
                 location_id: cartItem.location,
@@ -187,7 +186,12 @@ export default () => {
                 payment_method: paymentMethod, // Send user's payment choice
                 use_credits: paymentMethod === 'credits', // Explicit flag
                 payment_method_id: stripePaymentMethodId, // Stripe payment method ID for card payments
-            });
+            };
+
+            console.log('Creating server with payment data:', requestData);
+
+            // Create the server
+            const response = await http.post('/api/client/store/servers', requestData);
 
             // Clear cart
             localStorage.removeItem('cartItem');

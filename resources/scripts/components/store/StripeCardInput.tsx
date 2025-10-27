@@ -28,16 +28,12 @@ interface StripeCardFormProps {
 const StripeCardForm: React.FC<StripeCardFormProps> = ({ amount, onSuccess, onError }) => {
     const stripe = useStripe();
     const elements = useElements();
-    const [processing, setProcessing] = useState(false);
+    const [ready, setReady] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!stripe || !elements) {
+    const handleCardReady = async () => {
+        if (!stripe || !elements || ready) {
             return;
         }
-
-        setProcessing(true);
 
         try {
             const cardElement = elements.getElement(CardElement);
@@ -51,22 +47,21 @@ const StripeCardForm: React.FC<StripeCardFormProps> = ({ amount, onSuccess, onEr
             });
 
             if (error) {
-                onError(error.message || 'Payment failed');
-                setProcessing(false);
+                onError(error.message || 'Invalid card details');
                 return;
             }
 
             if (paymentMethod) {
+                setReady(true);
                 onSuccess(paymentMethod.id);
             }
         } catch (err: any) {
-            onError(err.message || 'Payment failed');
-            setProcessing(false);
+            onError(err.message || 'Invalid card details');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <div>
             <CardElementContainer>
                 <CardElement
                     options={{
@@ -83,16 +78,20 @@ const StripeCardForm: React.FC<StripeCardFormProps> = ({ amount, onSuccess, onEr
                             },
                         },
                     }}
+                    onChange={(e) => {
+                        if (e.complete) {
+                            handleCardReady();
+                        } else {
+                            setReady(false);
+                            onSuccess(''); // Clear payment method if card incomplete
+                        }
+                    }}
                 />
             </CardElementContainer>
-            <Button
-                type="submit"
-                disabled={!stripe || processing}
-                css={tw`w-full mt-4 justify-center`}
-            >
-                {processing ? <Spinner size="small" /> : `Pay $${amount.toFixed(2)}`}
-            </Button>
-        </form>
+            {ready && (
+                <p css={tw`text-green-400 text-sm mt-2`}>✓ Card validated and ready</p>
+            )}
+        </div>
     );
 };
 
