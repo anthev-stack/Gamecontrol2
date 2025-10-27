@@ -19,6 +19,10 @@ use Pterodactyl\Exceptions\DisplayException;
 use Pterodactyl\Mail\InvoiceGenerated;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
+use Stripe\Customer;
+use Stripe\PaymentMethod as StripePaymentMethod;
 
 class ServerController extends ClientApiController
 {
@@ -45,6 +49,8 @@ class ServerController extends ClientApiController
             'databases' => 'nullable|integer|min:0|max:10',
             'allocations' => 'nullable|integer|min:1|max:5',
             'backups' => 'nullable|integer|min:0|max:10',
+            'use_credits' => 'nullable|boolean',
+            'payment_method_id' => 'nullable|string', // Stripe payment method ID
         ]);
 
         $user = $request->user();
@@ -112,6 +118,56 @@ class ServerController extends ClientApiController
         }
 
         $finalAmount = $subtotal - $creditsApplied;
+
+        // If paying with card and there's a remaining balance, process Stripe payment
+        if (!$useCredits && $finalAmount > 0 && $request->has('payment_method_id')) {
+            Stripe::setApiKey(config('stripe.secret_key'));
+            
+            try {
+                // Create Stripe customer
+                $customer = Customer::create([
+                    'email' => $user->email,
+                    'name' => $user->name_first . ' ' . $user->name_last,
+                    'payment_method' => $validated['payment_method_id'],
+                    'metadata' => ['user_id' => $user->id],
+                ]);
+
+                // Attach payment method
+                StripePaymentMethod::retrieve($validated['payment_method_id'])->attach([
+                    'customer' => $customer->id,
+                ]);
+
+                // Create and confirm payment
+                $paymentIntent = PaymentIntent::create([
+                    'amount' => (int) ($finalAmount * 100), // Convert to cents
+                    'currency' => config('stripe.currency'),
+                    'customer' => $customer->id,
+                    'payment_method' => $validated['payment_method_id'],
+                    'confirmation_method' => 'automatic',
+                    'confirm' => true,
+                ]);
+
+                if ($paymentIntent->status !== 'succeeded') {
+                    throw new DisplayException('Payment was declined. Please try a different card.');
+                }
+
+                // Save payment method for future use
+                $stripePaymentMethod = StripePaymentMethod::retrieve($validated['payment_method_id']);
+                PaymentMethod::updateOrCreate(
+                    ['user_id' => $user->id, 'provider_id' => $stripePaymentMethod->id],
+                    [
+                        'type' => 'card',
+                        'last_four' => $stripePaymentMethod->card->last4 ?? null,
+                        'brand' => $stripePaymentMethod->card->brand ?? null,
+                        'exp_month' => $stripePaymentMethod->card->exp_month ?? null,
+                        'exp_year' => $stripePaymentMethod->card->exp_year ?? null,
+                        'is_default' => true,
+                    ]
+                );
+            } catch (\Exception $e) {
+                throw new DisplayException('Payment failed: ' . $e->getMessage());
+            }
+        }
 
         // Create the server
         try {

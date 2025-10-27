@@ -75,6 +75,11 @@ Route::prefix('/billing')->middleware(AccountSubject::class)->group(function () 
     
     // Server cancellation
     Route::delete('/servers/{server}/cancel', [Client\Billing\ServerCancellationController::class, 'destroy'])->name('api:client.billing.servers.cancel');
+    
+    // Stripe payment
+    Route::post('/invoices/{invoice}/payment-intent', [Client\Billing\StripePaymentController::class, 'createPaymentIntent'])->name('api:client.billing.stripe.payment-intent');
+    Route::post('/invoices/{invoice}/confirm-payment', [Client\Billing\StripePaymentController::class, 'confirmPayment'])->name('api:client.billing.stripe.confirm');
+    Route::post('/stripe/process-payment', [Client\Billing\StripePaymentController::class, 'processServerPayment'])->name('api:client.billing.stripe.process');
 });
 
 /*
