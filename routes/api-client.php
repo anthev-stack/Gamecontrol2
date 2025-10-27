@@ -19,11 +19,17 @@ use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
 Route::get('/', [Client\ClientController::class, 'index'])->name('api:client.index');
 Route::get('/permissions', [Client\ClientController::class, 'permissions']);
 
-// Store/Cart routes - publicly accessible
-Route::prefix('/store')->withoutMiddleware(['auth:sanctum', RequireTwoFactorAuthentication::class])->group(function () {
-    Route::get('/locations', [Client\Store\LocationController::class, 'index'])->name('api:client.store.locations');
-    Route::post('/locations/{location}/check', [Client\Store\LocationController::class, 'checkAvailability'])->name('api:client.store.locations.check');
-    Route::get('/eggs', [Client\Store\EggController::class, 'index'])->name('api:client.store.eggs');
+// Store/Cart routes - publicly accessible (except server creation)
+Route::prefix('/store')->group(function () {
+    // Public routes (no auth required)
+    Route::withoutMiddleware(['auth:sanctum', RequireTwoFactorAuthentication::class])->group(function () {
+        Route::get('/locations', [Client\Store\LocationController::class, 'index'])->name('api:client.store.locations');
+        Route::post('/locations/{location}/check', [Client\Store\LocationController::class, 'checkAvailability'])->name('api:client.store.locations.check');
+        Route::get('/eggs', [Client\Store\EggController::class, 'index'])->name('api:client.store.eggs');
+    });
+    
+    // Authenticated routes
+    Route::post('/servers', [Client\Store\ServerController::class, 'store'])->name('api:client.store.servers.create');
 });
 
 Route::prefix('/account')->middleware(AccountSubject::class)->group(function () {

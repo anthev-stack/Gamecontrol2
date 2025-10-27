@@ -4,6 +4,7 @@ import NavigationBar from '@/components/NavigationBar';
 import DashboardContainer from '@/components/dashboard/DashboardContainer';
 import BillingContainer from '@/components/dashboard/BillingContainer';
 import CartContainer from '@/components/store/CartContainer';
+import CheckoutContainer from '@/components/store/CheckoutContainer';
 import LandingPage from '@/components/LandingPage';
 import { NotFound } from '@/components/elements/ScreenBlock';
 import TransitionRouter from '@/TransitionRouter';
@@ -47,6 +48,9 @@ export default () => {
                         </Route>
                         <Route path={'/cart'} exact>
                             <CartContainer />
+                        </Route>
+                        <Route path={'/checkout'} exact>
+                            <CheckoutContainer />
                         </Route>
                         {routes.account.map(({ path, component: Component }) => (
                             <Route key={path} path={`/account/${path}`.replace('//', '/')} exact>
