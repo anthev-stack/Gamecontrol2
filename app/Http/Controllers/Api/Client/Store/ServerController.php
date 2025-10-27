@@ -62,6 +62,13 @@ class ServerController extends ClientApiController
             throw new DisplayException('No available nodes in the selected location with enough resources.');
         }
 
+        // Find an available allocation on the node
+        $allocation = $node->allocations()->whereNull('server_id')->first();
+        
+        if (!$allocation) {
+            throw new DisplayException('No available IP allocations on the selected node. Please contact an administrator.');
+        }
+
         // Calculate monthly price (simplified - should match cart logic)
         $pricePerGB = 2; // $2/GB RAM
         $storagePerGB = 0.40; // $0.40/GB storage
@@ -77,7 +84,7 @@ class ServerController extends ClientApiController
                 'owner_id' => $user->id,
                 'egg_id' => $egg->id,
                 'node_id' => $node->id,
-                'allocation_id' => null, // Will be auto-assigned
+                'allocation_id' => $allocation->id,
                 'allocation_additional' => [],
                 'memory' => $validated['memory'],
                 'disk' => $validated['disk'],
