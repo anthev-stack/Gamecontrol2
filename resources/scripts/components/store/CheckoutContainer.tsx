@@ -176,6 +176,8 @@ export default () => {
                 databases: 1,
                 allocations: 1,
                 backups: 0,
+                payment_method: paymentMethod, // Send user's payment choice
+                use_credits: paymentMethod === 'credits', // Explicit flag
             });
 
             // Clear cart

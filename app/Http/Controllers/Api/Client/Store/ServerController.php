@@ -84,11 +84,11 @@ class ServerController extends ClientApiController
         $subtotal = $monthlyPrice;
         $creditsApplied = 0;
         
-        // Check if user wants to auto-use credits
-        $preferences = UserBillingPreference::where('user_id', $user->id)->first();
-        $autoUseCredits = $preferences ? $preferences->auto_use_credits : true;
+        // Check if user explicitly chose to pay with credits at checkout
+        // This overrides the auto-use setting since it's a manual choice
+        $useCredits = $request->input('use_credits', false);
 
-        if ($autoUseCredits) {
+        if ($useCredits) {
             $userCredit = UserCredit::where('user_id', $user->id)->first();
             if ($userCredit && $userCredit->credits > 0) {
                 $dollarValue = $userCredit->credits * 0.10;
