@@ -201,7 +201,13 @@ export default () => {
             history.push(`/server/${response.data.attributes.identifier}`);
         } catch (err: any) {
             console.error('Failed to create server:', err);
-            setError(err.response?.data?.message || 'Failed to create server. Please try again.');
+            console.error('Error response:', err.response?.data);
+            
+            const errorMessage = err.response?.data?.errors?.[0]?.detail 
+                || err.response?.data?.message 
+                || 'Failed to create server. Please try again.';
+            
+            setError(errorMessage);
             setProcessing(false);
         }
     };
