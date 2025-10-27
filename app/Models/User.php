@@ -289,4 +289,36 @@ class User extends Model implements
             })
             ->groupBy('servers.id');
     }
+
+    /**
+     * Get all invoices for this user.
+     */
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Get server splits where this user is a participant.
+     */
+    public function serverSplits()
+    {
+        return $this->hasMany(ServerSplit::class);
+    }
+
+    /**
+     * Get payment methods for this user.
+     */
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
+
+    /**
+     * Get billing preferences for this user.
+     */
+    public function billingPreferences()
+    {
+        return $this->hasOne(UserBillingPreference::class);
+    }
 }
