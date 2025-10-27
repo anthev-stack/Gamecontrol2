@@ -116,6 +116,11 @@
                                 <i class="fa fa-dollar"></i> <span>Credits</span>
                             </a>
                         </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.emails') ?: 'active' }}">
+                            <a href="{{ route('admin.emails') }}">
+                                <i class="fa fa-envelope"></i> <span>Email Templates</span>
+                            </a>
+                        </li>
                         <li class="header">SERVICE MANAGEMENT</li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.mounts') ?: 'active' }}">
                             <a href="{{ route('admin.mounts') }}">

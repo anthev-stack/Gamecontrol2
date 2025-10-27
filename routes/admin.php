@@ -113,6 +113,21 @@ Route::group(['prefix' => 'credits'], function () {
 
 /*
 |--------------------------------------------------------------------------
+| Email Template Controller Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/emails
+|
+*/
+Route::group(['prefix' => 'emails'], function () {
+    Route::get('/', [Admin\Emails\EmailTemplateController::class, 'index'])->name('admin.emails');
+    Route::get('/templates', [Admin\Emails\EmailTemplateController::class, 'getTemplates'])->name('admin.emails.templates');
+    Route::get('/templates/{template}', [Admin\Emails\EmailTemplateController::class, 'getTemplate'])->name('admin.emails.templates.get');
+    Route::put('/templates/{template}', [Admin\Emails\EmailTemplateController::class, 'updateTemplate'])->name('admin.emails.templates.update');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Server Controller Routes
 |--------------------------------------------------------------------------
 |
