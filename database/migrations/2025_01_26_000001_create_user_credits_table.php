@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_credits', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
-            $table->integer('amount')->default(0)->comment('Credits amount (1 credit = $0.10)');
+            $table->integer('credits')->default(0)->comment('Credits amount (1 credit = $0.10)');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -25,7 +25,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('user_id');
             $table->integer('amount')->comment('Positive for additions, negative for deductions');
-            $table->string('type')->comment('referral, giveaway, admin_grant, payment, purchase');
+            $table->decimal('dollar_value', 10, 2)->comment('Dollar value of transaction');
+            $table->string('type')->comment('referral, giveaway, admin_grant, payment, purchase, admin_removal');
             $table->text('description')->nullable();
             $table->unsignedInteger('admin_id')->nullable()->comment('Admin who granted/deducted credits');
             $table->timestamps();
