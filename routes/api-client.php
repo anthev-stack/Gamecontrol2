@@ -60,6 +60,13 @@ Route::prefix('/billing')->middleware(AccountSubject::class)->group(function () 
     Route::get('/credits', [Client\Billing\CreditController::class, 'index'])->name('api:client.billing.credits');
     Route::get('/preferences', [Client\Billing\BillingPreferenceController::class, 'index'])->name('api:client.billing.preferences');
     Route::put('/preferences', [Client\Billing\BillingPreferenceController::class, 'update'])->name('api:client.billing.preferences.update');
+    
+    // Split billing routes
+    Route::get('/splits', [Client\Billing\SplitBillingController::class, 'index'])->name('api:client.billing.splits');
+    Route::post('/splits', [Client\Billing\SplitBillingController::class, 'store'])->name('api:client.billing.splits.create');
+    Route::post('/splits/{split}/accept', [Client\Billing\SplitBillingController::class, 'accept'])->name('api:client.billing.splits.accept');
+    Route::post('/splits/{split}/decline', [Client\Billing\SplitBillingController::class, 'decline'])->name('api:client.billing.splits.decline');
+    Route::delete('/splits/{split}', [Client\Billing\SplitBillingController::class, 'destroy'])->name('api:client.billing.splits.delete');
 });
 
 /*

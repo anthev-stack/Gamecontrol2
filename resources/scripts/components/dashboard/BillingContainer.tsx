@@ -6,7 +6,10 @@ import { CreditCard, Download, DollarSign, Calendar, CheckCircle, Clock, Users }
 import getCredits, { CreditData } from '@/api/billing/getCredits';
 import getBillingPreferences from '@/api/billing/getBillingPreferences';
 import updateBillingPreferences from '@/api/billing/updateBillingPreferences';
+import getSplits, { SplitsResponse } from '@/api/billing/getSplits';
+import { createSplit, acceptSplit, declineSplit, removeSplit } from '@/api/billing/manageSplit';
 import Spinner from '@/components/elements/Spinner';
+import { useStoreState } from 'easy-peasy';
 
 const Container = styled.div`
     ${tw`space-y-6`};
@@ -95,21 +98,28 @@ const SplitBillingCard = styled.div`
 `;
 
 export default () => {
+    const servers = useStoreState((state) => state.servers.data);
     const [activeTab, setActiveTab] = useState<'overview' | 'invoices' | 'split' | 'credits'>('overview');
     const [creditData, setCreditData] = useState<CreditData | null>(null);
+    const [splitsData, setSplitsData] = useState<SplitsResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [autoUseCredits, setAutoUseCredits] = useState(true);
     const [emailInvoices, setEmailInvoices] = useState(true);
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [inviteServer, setInviteServer] = useState<number | null>(null);
+    const [invitePercentage, setInvitePercentage] = useState(50);
 
     useEffect(() => {
         Promise.all([
             getCredits(),
             getBillingPreferences(),
+            getSplits(),
         ])
-            .then(([creditsData, preferencesData]) => {
+            .then(([creditsData, preferencesData, splits]) => {
                 setCreditData(creditsData);
                 setAutoUseCredits(preferencesData.auto_use_credits);
                 setEmailInvoices(preferencesData.email_invoices);
+                setSplitsData(splits);
                 setLoading(false);
             })
             .catch((error) => {
@@ -426,32 +436,192 @@ export default () => {
 
                 {/* Split Billing Tab */}
                 {activeTab === 'split' && (
-                    <Card>
-                        <CardTitle>
-                            <Users size={24} />
-                            Split Billing Servers
-                        </CardTitle>
-                        <p className="text-neutral-400 mb-6">
-                            You're sharing these servers with others. Each person pays their share automatically.
-                        </p>
-                        {mockSplitBilling.map(split => (
-                            <SplitBillingCard key={split.id}>
+                    <>
+                        {/* Pending Invitations */}
+                        {splitsData && splitsData.participating.filter(s => s.status === 'pending').length > 0 && (
+                            <Card>
+                                <CardTitle>
+                                    <Clock size={24} />
+                                    Pending Invitations
+                                </CardTitle>
+                                {splitsData.participating.filter(s => s.status === 'pending').map(split => (
+                                    <SplitBillingCard key={split.id}>
+                                        <div>
+                                            <p className="text-white font-bold mb-1">{split.server.name}</p>
+                                            <p className="text-sm text-neutral-400">
+                                                Invited by {split.inviter?.username} · Your share: {split.split_percentage}%
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button onClick={() => {
+                                                acceptSplit(split.id).then(() => {
+                                                    getSplits().then(setSplitsData);
+                                                });
+                                            }}>
+                                                Accept
+                                            </Button>
+                                            <Button variant="danger" onClick={() => {
+                                                declineSplit(split.id).then(() => {
+                                                    getSplits().then(setSplitsData);
+                                                });
+                                            }}>
+                                                Decline
+                                            </Button>
+                                        </div>
+                                    </SplitBillingCard>
+                                ))}
+                            </Card>
+                        )}
+
+                        {/* Active Splits */}
+                        <Card>
+                            <CardTitle>
+                                <Users size={24} />
+                                Split Billing Servers
+                            </CardTitle>
+                            <p className="text-neutral-400 mb-6">
+                                You're sharing these servers with others. Each person pays their share automatically.
+                            </p>
+                            {splitsData && splitsData.participating.filter(s => s.status === 'active').length > 0 ? (
+                                splitsData.participating.filter(s => s.status === 'active').map(split => (
+                                    <SplitBillingCard key={split.id}>
+                                        <div>
+                                            <p className="text-white font-bold mb-1">{split.server.name}</p>
+                                            <p className="text-sm text-neutral-400">
+                                                Split with {split.inviter?.username} · Your share: {split.split_percentage}%
+                                            </p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-xs text-green-400">Active</p>
+                                        </div>
+                                    </SplitBillingCard>
+                                ))
+                            ) : (
+                                <p className="text-neutral-500 text-center py-8">No active split billing agreements</p>
+                            )}
+                        </Card>
+
+                        {/* Invite Others */}
+                        <Card>
+                            <CardTitle>
+                                <Users size={24} />
+                                Invite Someone to Split
+                            </CardTitle>
+                            <p className="text-neutral-400 mb-4">
+                                Share server costs with friends. They'll get access to the server and pay their portion automatically.
+                            </p>
+                            <div css={tw`space-y-4`}>
                                 <div>
-                                    <p className="text-white font-bold mb-1">{split.serverName}</p>
-                                    <p className="text-sm text-neutral-400">
-                                        Split with {split.partner} · Your share: {split.yourShare}
+                                    <label css={tw`block text-neutral-300 mb-2 text-sm`}>Select Server</label>
+                                    <select
+                                        value={inviteServer || ''}
+                                        onChange={(e) => setInviteServer(parseInt(e.target.value))}
+                                        css={tw`w-full p-3 rounded-lg text-white`}
+                                        style={{
+                                            backgroundColor: 'rgba(0, 41, 102, 0.3)',
+                                            border: '1px solid rgba(0, 102, 255, 0.3)',
+                                        }}
+                                    >
+                                        <option value="">Choose a server...</option>
+                                        {servers.map(server => (
+                                            <option key={server.id} value={server.id} style={{ backgroundColor: '#001433', color: 'white' }}>
+                                                {server.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label css={tw`block text-neutral-300 mb-2 text-sm`}>Friend's Email</label>
+                                    <input
+                                        type="email"
+                                        value={inviteEmail}
+                                        onChange={(e) => setInviteEmail(e.target.value)}
+                                        placeholder="friend@example.com"
+                                        css={tw`w-full p-3 rounded-lg text-white`}
+                                        style={{
+                                            backgroundColor: 'rgba(0, 41, 102, 0.3)',
+                                            border: '1px solid rgba(0, 102, 255, 0.3)',
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <label css={tw`block text-neutral-300 mb-2 text-sm`}>Their Cost Share: {invitePercentage}%</label>
+                                    <input
+                                        type="range"
+                                        min="10"
+                                        max="90"
+                                        value={invitePercentage}
+                                        onChange={(e) => setInvitePercentage(parseInt(e.target.value))}
+                                        css={tw`w-full`}
+                                        style={{
+                                            accentColor: '#0066ff',
+                                        }}
+                                    />
+                                    <p css={tw`text-xs text-neutral-400 mt-1`}>
+                                        You pay {100 - invitePercentage}%, they pay {invitePercentage}%
                                     </p>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-2xl font-bold text-white">{split.amount}</p>
-                                    <p className="text-xs text-green-400">Active</p>
-                                </div>
-                            </SplitBillingCard>
-                        ))}
-                        <Button className="mt-4">
-                            Invite Someone to Split
-                        </Button>
-                    </Card>
+                                <Button
+                                    css={tw`w-full justify-center`}
+                                    disabled={!inviteEmail || !inviteServer}
+                                    onClick={() => {
+                                        if (!inviteServer) return;
+                                        createSplit({
+                                            server_id: inviteServer,
+                                            email: inviteEmail,
+                                            split_percentage: invitePercentage,
+                                        }).then(() => {
+                                            setInviteEmail('');
+                                            setInviteServer(null);
+                                            setInvitePercentage(50);
+                                            getSplits().then(setSplitsData);
+                                            alert('Invitation sent successfully!');
+                                        }).catch(error => {
+                                            alert(error.response?.data?.message || 'Failed to send invitation');
+                                        });
+                                    }}
+                                >
+                                    Send Invitation
+                                </Button>
+                            </div>
+                        </Card>
+
+                        {/* Sent Invitations */}
+                        {splitsData && splitsData.sent.length > 0 && (
+                            <Card>
+                                <CardTitle>
+                                    <Clock size={24} />
+                                    Invitations You've Sent
+                                </CardTitle>
+                                {splitsData.sent.map(split => (
+                                    <SplitBillingCard key={split.id}>
+                                        <div>
+                                            <p className="text-white font-bold mb-1">{split.server.name}</p>
+                                            <p className="text-sm text-neutral-400">
+                                                Invited {split.participant?.username} ({split.participant?.email}) · Their share: {split.split_percentage}%
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <span css={tw`text-sm`} style={{ color: split.status === 'active' ? '#22c55e' : split.status === 'pending' ? '#f59e0b' : '#ef4444' }}>
+                                                {split.status.charAt(0).toUpperCase() + split.status.slice(1)}
+                                            </span>
+                                            {split.status === 'active' && (
+                                                <Button variant="danger" onClick={() => {
+                                                    if (confirm('Remove this person from the split?')) {
+                                                        removeSplit(split.id).then(() => {
+                                                            getSplits().then(setSplitsData);
+                                                        });
+                                                    }
+                                                }}>
+                                                    Remove
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </SplitBillingCard>
+                                ))}
+                            </Card>
+                        )}
+                    </>
                 )}
             </Container>
         </PageContentBlock>
