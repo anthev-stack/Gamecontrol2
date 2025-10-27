@@ -20,15 +20,15 @@ Route::get('/', [Client\ClientController::class, 'index'])->name('api:client.ind
 Route::get('/permissions', [Client\ClientController::class, 'permissions']);
 
 // Store/Cart routes - publicly accessible (except server creation)
-Route::prefix('/store')->group(function () {
+Route::prefix('/store')->withoutMiddleware([RequireTwoFactorAuthentication::class])->group(function () {
     // Public routes (no auth required)
-    Route::withoutMiddleware(['auth:sanctum', RequireTwoFactorAuthentication::class])->group(function () {
+    Route::withoutMiddleware(['auth:sanctum'])->group(function () {
         Route::get('/locations', [Client\Store\LocationController::class, 'index'])->name('api:client.store.locations');
         Route::post('/locations/{location}/check', [Client\Store\LocationController::class, 'checkAvailability'])->name('api:client.store.locations.check');
         Route::get('/eggs', [Client\Store\EggController::class, 'index'])->name('api:client.store.eggs');
     });
     
-    // Authenticated routes
+    // Authenticated routes (session auth only, no API key required)
     Route::post('/servers', [Client\Store\ServerController::class, 'store'])->name('api:client.store.servers.create');
 });
 
