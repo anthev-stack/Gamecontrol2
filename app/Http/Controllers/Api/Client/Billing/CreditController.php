@@ -18,9 +18,9 @@ class CreditController extends ClientApiController
         $user = $request->user();
         
         // Get or create credits account
-        $credits = UserCredit::firstOrCreate(
+        $userCredit = UserCredit::firstOrCreate(
             ['user_id' => $user->id],
-            ['amount' => 0]
+            ['credits' => 0]
         );
 
         // Get recent transactions
@@ -45,8 +45,8 @@ class CreditController extends ClientApiController
             });
 
         return response()->json([
-            'credits' => $credits->amount,
-            'dollar_value' => $credits->dollar_value,
+            'credits' => $userCredit->credits,
+            'dollar_value' => $userCredit->credits * 0.10,
             'transactions' => $transactions,
         ]);
     }
