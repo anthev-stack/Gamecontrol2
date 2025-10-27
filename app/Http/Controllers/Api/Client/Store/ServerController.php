@@ -10,9 +10,15 @@ use Pterodactyl\Models\Location;
 use Pterodactyl\Models\Node;
 use Pterodactyl\Models\UserCredit;
 use Pterodactyl\Models\CreditTransaction;
+use Pterodactyl\Models\Invoice;
+use Pterodactyl\Models\InvoiceItem;
+use Pterodactyl\Models\UserBillingPreference;
 use Pterodactyl\Http\Controllers\Api\Client\ClientApiController;
 use Pterodactyl\Services\Servers\ServerCreationService;
 use Pterodactyl\Exceptions\DisplayException;
+use Pterodactyl\Mail\InvoiceGenerated;
+use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
 
 class ServerController extends ClientApiController
 {
@@ -74,8 +80,38 @@ class ServerController extends ClientApiController
         $storagePerGB = 0.40; // $0.40/GB storage
         $monthlyPrice = ($validated['memory'] / 1024 * $pricePerGB) + ($validated['disk'] / 1024 * $storagePerGB);
 
-        // For now, we'll skip payment processing and just create the server
-        // In production, you'd handle Stripe payment or credit deduction here
+        // Handle payment/credits
+        $subtotal = $monthlyPrice;
+        $creditsApplied = 0;
+        
+        // Check if user wants to auto-use credits
+        $preferences = UserBillingPreference::where('user_id', $user->id)->first();
+        $autoUseCredits = $preferences ? $preferences->auto_use_credits : true;
+
+        if ($autoUseCredits) {
+            $userCredit = UserCredit::where('user_id', $user->id)->first();
+            if ($userCredit && $userCredit->credits > 0) {
+                $dollarValue = $userCredit->credits * 0.10;
+                $creditsToUse = min($dollarValue, $monthlyPrice);
+                $creditsCount = (int) ceil($creditsToUse / 0.10);
+
+                // Apply credits
+                $userCredit->credits -= $creditsCount;
+                $userCredit->save();
+
+                CreditTransaction::create([
+                    'user_id' => $user->id,
+                    'amount' => -$creditsCount,
+                    'dollar_value' => -$creditsToUse,
+                    'type' => 'payment',
+                    'description' => "Initial payment for {$validated['name']}",
+                ]);
+
+                $creditsApplied = $creditsToUse;
+            }
+        }
+
+        $finalAmount = $subtotal - $creditsApplied;
 
         // Create the server
         try {
@@ -102,9 +138,48 @@ class ServerController extends ClientApiController
                 'oom_disabled' => false,
             ]);
 
+            // Create invoice
+            $invoice = Invoice::create([
+                'invoice_number' => Invoice::generateInvoiceNumber(),
+                'user_id' => $user->id,
+                'server_id' => $server->id,
+                'subtotal' => $subtotal,
+                'credits_used' => $creditsApplied,
+                'total' => $finalAmount,
+                'status' => $finalAmount <= 0 ? 'paid' : 'pending',
+                'due_date' => Carbon::now()->addDays(7),
+                'paid_at' => $finalAmount <= 0 ? now() : null,
+                'description' => "Initial setup for {$server->name}",
+            ]);
+
+            // Add invoice items
+            InvoiceItem::create([
+                'invoice_id' => $invoice->id,
+                'description' => "Server Setup - {$server->name}",
+                'unit_price' => $subtotal,
+                'quantity' => 1,
+                'total' => $subtotal,
+            ]);
+
+            // Send email if user has email notifications enabled
+            if ($preferences && $preferences->email_invoices) {
+                try {
+                    Mail::to($user)->send(new InvoiceGenerated($invoice));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send invoice email: ' . $e->getMessage());
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Server created successfully',
+                'invoice' => [
+                    'id' => $invoice->id,
+                    'invoice_number' => $invoice->invoice_number,
+                    'total' => $finalAmount,
+                    'credits_used' => $creditsApplied,
+                    'status' => $invoice->status,
+                ],
                 'attributes' => [
                     'id' => $server->id,
                     'identifier' => $server->uuidShort,
@@ -112,6 +187,24 @@ class ServerController extends ClientApiController
                 ],
             ]);
         } catch (\Exception $e) {
+            // Rollback credits if server creation fails
+            if ($creditsApplied > 0) {
+                $userCredit = UserCredit::where('user_id', $user->id)->first();
+                if ($userCredit) {
+                    $creditsCount = (int) ceil($creditsApplied / 0.10);
+                    $userCredit->credits += $creditsCount;
+                    $userCredit->save();
+
+                    CreditTransaction::create([
+                        'user_id' => $user->id,
+                        'amount' => $creditsCount,
+                        'dollar_value' => $creditsApplied,
+                        'type' => 'admin_grant',
+                        'description' => "Refund for failed server creation: {$validated['name']}",
+                    ]);
+                }
+            }
+            
             throw new DisplayException('Failed to create server: ' . $e->getMessage());
         }
     }

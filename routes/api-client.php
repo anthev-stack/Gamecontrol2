@@ -72,6 +72,9 @@ Route::prefix('/billing')->middleware(AccountSubject::class)->group(function () 
     Route::post('/splits/{split}/accept', [Client\Billing\SplitBillingController::class, 'accept'])->name('api:client.billing.splits.accept');
     Route::post('/splits/{split}/decline', [Client\Billing\SplitBillingController::class, 'decline'])->name('api:client.billing.splits.decline');
     Route::delete('/splits/{split}', [Client\Billing\SplitBillingController::class, 'destroy'])->name('api:client.billing.splits.delete');
+    
+    // Server cancellation
+    Route::delete('/servers/{server}/cancel', [Client\Billing\ServerCancellationController::class, 'destroy'])->name('api:client.billing.servers.cancel');
 });
 
 /*
