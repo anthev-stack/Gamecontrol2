@@ -344,15 +344,25 @@ export default () => {
                                                 <button 
                                                     className="text-blue-400 hover:text-blue-300 text-sm mr-2"
                                                     onClick={() => {
-                                                        // Pay with credits
                                                         const creditsNeeded = Math.ceil(invoice.total * 10);
                                                         if (userCredits >= creditsNeeded) {
-                                                            if (confirm(`Use ${creditsNeeded} credits to pay this invoice?`)) {
-                                                                // TODO: Call pay API
-                                                                alert('Payment feature coming soon!');
+                                                            if (confirm(`Use ${creditsNeeded} credits ($${invoice.total.toFixed(2)}) to pay this invoice?`)) {
+                                                                http.post(`/api/client/billing/invoices/${invoice.id}/pay`)
+                                                                    .then(() => {
+                                                                        alert('Invoice paid successfully!');
+                                                                        // Refresh data
+                                                                        Promise.all([getCredits(), getInvoices()])
+                                                                            .then(([creditsData, invoicesData]) => {
+                                                                                setCreditData(creditsData);
+                                                                                setInvoices(invoicesData);
+                                                                            });
+                                                                    })
+                                                                    .catch((err) => {
+                                                                        alert(err.response?.data?.message || 'Failed to pay invoice');
+                                                                    });
                                                             }
                                                         } else {
-                                                            alert('Insufficient credits');
+                                                            alert(`Insufficient credits. You have ${userCredits} credits but need ${creditsNeeded} credits.`);
                                                         }
                                                     }}
                                                 >
