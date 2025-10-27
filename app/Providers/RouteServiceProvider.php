@@ -64,6 +64,11 @@ class RouteServiceProvider extends ServiceProvider
                     ->group(base_path('routes/api-client.php'));
             });
 
+            // Public API routes (no authentication required)
+            Route::middleware('api')
+                ->prefix('/api/public')
+                ->group(base_path('routes/api-public.php'));
+
             Route::middleware('daemon')
                 ->prefix('/api/remote')
                 ->scopeBindings()

@@ -134,10 +134,10 @@ export default () => {
         setCartPrice(parseFloat(storedPrice));
         setServerName(`${user.username}'s Server`);
 
-        // Fetch egg and location details
+        // Fetch egg and location details from public API
         Promise.all([
-            http.get('/api/client/store/eggs'),
-            http.get('/api/client/store/locations'),
+            http.get('/api/public/store/eggs'),
+            http.get('/api/public/store/locations'),
             getCredits(),
         ])
             .then(([eggsRes, locationsRes, creditsData]) => {

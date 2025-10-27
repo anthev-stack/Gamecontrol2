@@ -301,10 +301,10 @@ export default () => {
     const [maxStorage, setMaxStorage] = useState(100);
     
     useEffect(() => {
-        // Fetch real locations and eggs from API
+        // Fetch real locations and eggs from public API (no auth required)
         Promise.all([
-            http.get('/api/client/store/locations'),
-            http.get('/api/client/store/eggs'),
+            http.get('/api/public/store/locations'),
+            http.get('/api/public/store/eggs'),
         ])
             .then(([locationsRes, eggsRes]) => {
                 setLocations(locationsRes.data.data);
