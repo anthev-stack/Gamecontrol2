@@ -10,7 +10,7 @@ import getSplits, { SplitsResponse } from '@/api/billing/getSplits';
 import { createSplit, acceptSplit, declineSplit, removeSplit } from '@/api/billing/manageSplit';
 import getInvoices, { Invoice } from '@/api/billing/getInvoices';
 import Spinner from '@/components/elements/Spinner';
-import { useStoreState } from 'easy-peasy';
+import http from '@/api/http';
 
 const Container = styled.div`
     ${tw`space-y-6`};
@@ -100,7 +100,7 @@ const SplitBillingCard = styled.div`
 `;
 
 export default () => {
-    const servers = useStoreState((state) => state.servers.data);
+    const [userServers, setUserServers] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState<'overview' | 'invoices' | 'split' | 'credits'>('overview');
     const [creditData, setCreditData] = useState<CreditData | null>(null);
     const [splitsData, setSplitsData] = useState<SplitsResponse | null>(null);
@@ -118,13 +118,15 @@ export default () => {
             getBillingPreferences(),
             getSplits(),
             getInvoices(),
+            http.get('/api/client'),
         ])
-            .then(([creditsData, preferencesData, splits, invoicesData]) => {
+            .then(([creditsData, preferencesData, splits, invoicesData, serversRes]) => {
                 setCreditData(creditsData);
                 setAutoUseCredits(preferencesData.auto_use_credits);
                 setEmailInvoices(preferencesData.email_invoices);
                 setSplitsData(splits);
                 setInvoices(invoicesData);
+                setUserServers(serversRes.data || []);
                 setLoading(false);
             })
             .catch((error) => {
@@ -247,9 +249,9 @@ export default () => {
                                             type="checkbox"
                                             checked={autoUseCredits}
                                             onChange={(e) => handleToggleAutoUseCredits(e.target.checked)}
-                                            css={tw`sr-only peer`}
+                                            css={tw`sr-only`}
                                         />
-                                        <div css={tw`w-11 h-6 rounded-full peer transition-all duration-300`} style={{
+                                        <div css={tw`w-11 h-6 rounded-full transition-all duration-300`} style={{
                                             backgroundColor: autoUseCredits ? '#0066ff' : '#4b5563'
                                         }}>
                                             <div css={tw`absolute top-0.5 left-0.5 bg-white rounded-full h-5 w-5 transition-transform duration-300`} style={{
@@ -270,9 +272,9 @@ export default () => {
                                             type="checkbox"
                                             checked={emailInvoices}
                                             onChange={(e) => handleToggleEmailInvoices(e.target.checked)}
-                                            css={tw`sr-only peer`}
+                                            css={tw`sr-only`}
                                         />
-                                        <div css={tw`w-11 h-6 rounded-full peer transition-all duration-300`} style={{
+                                        <div css={tw`w-11 h-6 rounded-full transition-all duration-300`} style={{
                                             backgroundColor: emailInvoices ? '#0066ff' : '#4b5563'
                                         }}>
                                             <div css={tw`absolute top-0.5 left-0.5 bg-white rounded-full h-5 w-5 transition-transform duration-300`} style={{
@@ -480,13 +482,20 @@ export default () => {
                                             }}>
                                                 Accept
                                             </Button>
-                                            <Button variant="danger" onClick={() => {
-                                                declineSplit(split.id).then(() => {
-                                                    getSplits().then(setSplitsData);
-                                                });
-                                            }}>
+                                            <button
+                                                onClick={() => {
+                                                    declineSplit(split.id).then(() => {
+                                                        getSplits().then(setSplitsData);
+                                                    });
+                                                }}
+                                                css={tw`px-4 py-2 rounded font-semibold transition-all duration-300`}
+                                                style={{
+                                                    background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+                                                    color: 'white',
+                                                }}
+                                            >
                                                 Decline
-                                            </Button>
+                                            </button>
                                         </div>
                                     </SplitBillingCard>
                                 ))}
@@ -543,9 +552,9 @@ export default () => {
                                         }}
                                     >
                                         <option value="">Choose a server...</option>
-                                        {servers.map(server => (
-                                            <option key={server.id} value={server.id} style={{ backgroundColor: '#001433', color: 'white' }}>
-                                                {server.name}
+                                        {userServers.map((server: any) => (
+                                            <option key={server.attributes.id} value={server.attributes.id} style={{ backgroundColor: '#001433', color: 'white' }}>
+                                                {server.attributes.name}
                                             </option>
                                         ))}
                                     </select>
@@ -573,9 +582,6 @@ export default () => {
                                         value={invitePercentage}
                                         onChange={(e) => setInvitePercentage(parseInt(e.target.value))}
                                         css={tw`w-full`}
-                                        style={{
-                                            accentColor: '#0066ff',
-                                        }}
                                     />
                                     <p css={tw`text-xs text-neutral-400 mt-1`}>
                                         You pay {100 - invitePercentage}%, they pay {invitePercentage}%
@@ -626,15 +632,22 @@ export default () => {
                                                 {split.status.charAt(0).toUpperCase() + split.status.slice(1)}
                                             </span>
                                             {split.status === 'active' && (
-                                                <Button variant="danger" onClick={() => {
-                                                    if (confirm('Remove this person from the split?')) {
-                                                        removeSplit(split.id).then(() => {
-                                                            getSplits().then(setSplitsData);
-                                                        });
-                                                    }
-                                                }}>
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm('Remove this person from the split?')) {
+                                                            removeSplit(split.id).then(() => {
+                                                                getSplits().then(setSplitsData);
+                                                            });
+                                                        }
+                                                    }}
+                                                    css={tw`px-4 py-2 rounded font-semibold transition-all duration-300`}
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+                                                        color: 'white',
+                                                    }}
+                                                >
                                                     Remove
-                                                </Button>
+                                                </button>
                                             )}
                                         </div>
                                     </SplitBillingCard>
