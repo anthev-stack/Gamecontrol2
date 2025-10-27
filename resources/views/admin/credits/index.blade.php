@@ -182,7 +182,6 @@
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + '{{ Auth::user()->createToken("admin-credits")->plainTextToken ?? "" }}'
                 },
                 success: function(data) {
                     currentUserId = userId;
