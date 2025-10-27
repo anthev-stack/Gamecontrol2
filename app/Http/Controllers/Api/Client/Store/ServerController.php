@@ -42,8 +42,14 @@ class ServerController extends ClientApiController
         ]);
 
         $user = $request->user();
-        $egg = Egg::findOrFail($validated['egg_id']);
+        $egg = Egg::with('variables')->findOrFail($validated['egg_id']);
         $location = Location::findOrFail($validated['location_id']);
+        
+        // Build environment variables with defaults
+        $environment = [];
+        foreach ($egg->variables as $variable) {
+            $environment[$variable->env_variable] = $variable->default_value;
+        }
 
         // Find available node in the location
         $node = Node::where('location_id', $location->id)
@@ -81,7 +87,7 @@ class ServerController extends ClientApiController
                 'threads' => null,
                 'image' => array_values($egg->docker_images)[0] ?? 'ghcr.io/pterodactyl/yolks:latest',
                 'startup' => $egg->startup,
-                'environment' => [],
+                'environment' => $environment,
                 'databases' => $validated['databases'] ?? 0,
                 'allocations' => $validated['allocations'] ?? 1,
                 'backups' => $validated['backups'] ?? 0,
