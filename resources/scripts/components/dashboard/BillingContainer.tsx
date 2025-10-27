@@ -554,11 +554,15 @@ export default () => {
                                         }}
                                     >
                                         <option value="">Choose a server...</option>
-                                        {userServers.map((server: any) => (
-                                            <option key={server.attributes.id} value={server.attributes.id} style={{ backgroundColor: '#001433', color: 'white' }}>
-                                                {server.attributes.name}
-                                            </option>
-                                        ))}
+                                        {userServers && userServers.length > 0 ? (
+                                            userServers.map((server: any) => (
+                                                <option key={server.attributes.id} value={server.attributes.id} style={{ backgroundColor: '#001433', color: 'white' }}>
+                                                    {server.attributes.name}
+                                                </option>
+                                            ))
+                                        ) : (
+                                            <option disabled>No servers available</option>
+                                        )}
                                     </select>
                                 </div>
                                 <div>
