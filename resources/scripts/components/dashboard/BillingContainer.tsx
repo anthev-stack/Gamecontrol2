@@ -8,6 +8,7 @@ import getBillingPreferences from '@/api/billing/getBillingPreferences';
 import updateBillingPreferences from '@/api/billing/updateBillingPreferences';
 import getSplits, { SplitsResponse } from '@/api/billing/getSplits';
 import { createSplit, acceptSplit, declineSplit, removeSplit } from '@/api/billing/manageSplit';
+import getInvoices, { Invoice } from '@/api/billing/getInvoices';
 import Spinner from '@/components/elements/Spinner';
 import { useStoreState } from 'easy-peasy';
 
@@ -66,11 +67,12 @@ const Td = styled.td`
     border-color: rgba(0, 102, 255, 0.1);
 `;
 
-const Badge = styled.span<{ status: 'paid' | 'pending' | 'failed' }>`
+const Badge = styled.span<{ status: 'paid' | 'pending' | 'failed' | 'refunded' }>`
     ${tw`px-3 py-1 rounded text-xs font-semibold`};
     ${props => props.status === 'paid' && tw`bg-green-500 text-white`};
     ${props => props.status === 'pending' && tw`bg-yellow-500 text-black`};
     ${props => props.status === 'failed' && tw`bg-red-500 text-white`};
+    ${props => props.status === 'refunded' && tw`bg-blue-500 text-white`};
 `;
 
 const Button = styled.button`
@@ -102,6 +104,7 @@ export default () => {
     const [activeTab, setActiveTab] = useState<'overview' | 'invoices' | 'split' | 'credits'>('overview');
     const [creditData, setCreditData] = useState<CreditData | null>(null);
     const [splitsData, setSplitsData] = useState<SplitsResponse | null>(null);
+    const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [loading, setLoading] = useState(true);
     const [autoUseCredits, setAutoUseCredits] = useState(true);
     const [emailInvoices, setEmailInvoices] = useState(true);
@@ -114,12 +117,14 @@ export default () => {
             getCredits(),
             getBillingPreferences(),
             getSplits(),
+            getInvoices(),
         ])
-            .then(([creditsData, preferencesData, splits]) => {
+            .then(([creditsData, preferencesData, splits, invoicesData]) => {
                 setCreditData(creditsData);
                 setAutoUseCredits(preferencesData.auto_use_credits);
                 setEmailInvoices(preferencesData.email_invoices);
                 setSplitsData(splits);
+                setInvoices(invoicesData);
                 setLoading(false);
             })
             .catch((error) => {
@@ -142,18 +147,6 @@ export default () => {
 
     const userCredits = creditData?.credits || 0;
     const dollarValue = creditData?.dollar_value || 0;
-
-    const mockInvoices = [
-        { id: 'INV-001', date: '2025-10-01', amount: '$15.00', status: 'paid' as const, description: 'Monthly Hosting - Minecraft Server' },
-        { id: 'INV-002', date: '2025-09-01', amount: '$15.00', status: 'paid' as const, description: 'Monthly Hosting - Minecraft Server' },
-        { id: 'INV-003', date: '2025-08-01', amount: '$15.00', status: 'paid' as const, description: 'Monthly Hosting - Minecraft Server' },
-        { id: 'INV-004', date: '2025-07-15', amount: '$5.00', status: 'paid' as const, description: 'Initial Setup Fee' },
-    ];
-
-    const mockSplitBilling = [
-        { id: 1, serverName: 'MINECRAFT SERVER', partner: 'john@example.com', yourShare: '50%', amount: '$7.50', status: 'Active' },
-        { id: 2, serverName: 'CS2 SERVER', partner: 'sarah@example.com', yourShare: '60%', amount: '$4.80', status: 'Active' },
-    ];
 
     if (loading) {
         return (
@@ -323,30 +316,57 @@ export default () => {
                                     <Th>Invoice #</Th>
                                     <Th>Date</Th>
                                     <Th>Description</Th>
+                                    <Th>Credits Used</Th>
                                     <Th>Amount</Th>
                                     <Th>Status</Th>
                                     <Th>Action</Th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {mockInvoices.map(invoice => (
+                                {invoices.length > 0 ? invoices.map(invoice => (
                                     <tr key={invoice.id}>
-                                        <Td className="font-mono text-white">{invoice.id}</Td>
-                                        <Td>{invoice.date}</Td>
-                                        <Td>{invoice.description}</Td>
-                                        <Td className="font-semibold text-white">{invoice.amount}</Td>
+                                        <Td className="font-mono text-white">{invoice.invoice_number}</Td>
+                                        <Td>{new Date(invoice.created_at).toLocaleDateString()}</Td>
+                                        <Td>{invoice.description || (invoice.server ? `Monthly - ${invoice.server.name}` : 'General Invoice')}</Td>
+                                        <Td className="text-neutral-400">${invoice.credits_used.toFixed(2)}</Td>
+                                        <Td className="font-semibold text-white">${invoice.total.toFixed(2)}</Td>
                                         <Td>
                                             <Badge status={invoice.status}>
                                                 {invoice.status.toUpperCase()}
                                             </Badge>
                                         </Td>
                                         <Td>
+                                            {invoice.status === 'pending' && (
+                                                <button 
+                                                    className="text-blue-400 hover:text-blue-300 text-sm mr-2"
+                                                    onClick={() => {
+                                                        // Pay with credits
+                                                        const creditsNeeded = Math.ceil(invoice.total * 10);
+                                                        if (userCredits >= creditsNeeded) {
+                                                            if (confirm(`Use ${creditsNeeded} credits to pay this invoice?`)) {
+                                                                // TODO: Call pay API
+                                                                alert('Payment feature coming soon!');
+                                                            }
+                                                        } else {
+                                                            alert('Insufficient credits');
+                                                        }
+                                                    }}
+                                                >
+                                                    Pay Now
+                                                </button>
+                                            )}
                                             <button className="text-blue-400 hover:text-blue-300 text-sm">
-                                                Download PDF
+                                                View Details
                                             </button>
                                         </Td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    <tr>
+                                        <Td colSpan={7} className="text-center text-neutral-500 py-8">
+                                            No invoices yet
+                                        </Td>
+                                    </tr>
+                                )}
                             </tbody>
                         </Table>
                     </Card>
