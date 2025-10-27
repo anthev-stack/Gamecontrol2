@@ -8,6 +8,7 @@ import { useStoreState } from 'easy-peasy';
 import http from '@/api/http';
 import Spinner from '@/components/elements/Spinner';
 import getCredits from '@/api/billing/getCredits';
+import StripeCardInput from '@/components/store/StripeCardInput';
 
 const Container = styled.div`
     ${tw`max-w-4xl mx-auto space-y-6`};
@@ -109,6 +110,7 @@ export default () => {
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState('');
+    const [stripePaymentMethodId, setStripePaymentMethodId] = useState<string | null>(null);
     const [serverName, setServerName] = useState('');
 
     useEffect(() => {
@@ -161,6 +163,12 @@ export default () => {
     const handlePlaceOrder = async () => {
         if (!cartItem || !egg || !location || !user) return;
 
+        // Validate payment method
+        if (paymentMethod === 'card' && !stripePaymentMethodId) {
+            setError('Please enter your card details');
+            return;
+        }
+
         setProcessing(true);
         setError('');
 
@@ -178,6 +186,7 @@ export default () => {
                 backups: 0,
                 payment_method: paymentMethod, // Send user's payment choice
                 use_credits: paymentMethod === 'credits', // Explicit flag
+                payment_method_id: stripePaymentMethodId, // Stripe payment method ID for card payments
             });
 
             // Clear cart
@@ -328,6 +337,24 @@ export default () => {
                                 {paymentMethod === 'card' && <Check size={24} style={{ color: '#0066ff' }} />}
                             </div>
                         </PaymentOption>
+
+                        {/* Card Payment Form */}
+                        {paymentMethod === 'card' && (
+                            <div css={tw`mt-4`}>
+                                <p css={tw`text-neutral-400 text-sm mb-3`}>Enter your card details:</p>
+                                <StripeCardInput
+                                    amount={cartPrice}
+                                    onSuccess={(paymentMethodId) => {
+                                        setStripePaymentMethodId(paymentMethodId);
+                                        setError('');
+                                    }}
+                                    onError={(errorMsg) => {
+                                        setError(errorMsg);
+                                        setStripePaymentMethodId(null);
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
                 </Card>
 
