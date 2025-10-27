@@ -182,7 +182,7 @@
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
                 },
                 success: function(data) {
                     currentUserId = userId;
@@ -244,7 +244,7 @@
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
                 },
                 data: {
                     amount: parseInt(amount),
@@ -286,7 +286,7 @@
                     method: 'DELETE',
                     headers: {
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
                     },
                     data: {
                         amount: parseInt(amount),
