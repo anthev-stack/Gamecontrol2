@@ -170,16 +170,16 @@ export default () => {
                         <StatLabel>Credits (${dollarValue.toFixed(2)} value)</StatLabel>
                     </StatCard>
                     <StatCard>
-                        <StatValue>$15.00</StatValue>
-                        <StatLabel>Current Balance</StatLabel>
+                        <StatValue>{invoices.filter(i => i.status === 'pending').length}</StatValue>
+                        <StatLabel>Pending Invoices</StatLabel>
                     </StatCard>
                     <StatCard>
-                        <StatValue>$180.00</StatValue>
-                        <StatLabel>Total Spent</StatLabel>
+                        <StatValue>{splitsData?.participating.filter(s => s.status === 'active').length || 0}</StatValue>
+                        <StatLabel>Active Splits</StatLabel>
                     </StatCard>
                     <StatCard>
-                        <StatValue>2</StatValue>
-                        <StatLabel>Split Servers</StatLabel>
+                        <StatValue>{splitsData?.participating.filter(s => s.status === 'pending').length || 0}</StatValue>
+                        <StatLabel>Pending Invitations</StatLabel>
                     </StatCard>
                 </Grid>
 
@@ -219,16 +219,15 @@ export default () => {
                                 <CreditCard size={24} />
                                 Payment Method
                             </CardTitle>
-                            <PaymentMethodCard>
-                                <div className="flex items-center gap-4">
+                            <div css={tw`p-6 text-center`}>
+                                <div css={tw`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4`} style={{ backgroundColor: 'rgba(0, 102, 255, 0.2)' }}>
                                     <CreditCard size={32} style={{ color: '#0066ff' }} />
-                                    <div>
-                                        <p className="text-white font-semibold">Visa ending in 4242</p>
-                                        <p className="text-sm text-neutral-400">Expires 12/2026</p>
-                                    </div>
                                 </div>
-                                <Button>Update</Button>
-                            </PaymentMethodCard>
+                                <p css={tw`text-neutral-400 mb-4`}>No payment method on file</p>
+                                <Button disabled css={tw`opacity-50 cursor-not-allowed`}>
+                                    Coming Soon - Stripe Integration
+                                </Button>
+                            </div>
                         </Card>
 
                         <Card>
@@ -289,17 +288,20 @@ export default () => {
                         <Card>
                             <CardTitle>
                                 <Calendar size={24} />
-                                Next Billing Date
+                                Server Billing
                             </CardTitle>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-2xl font-bold text-white mb-1">November 1, 2025</p>
-                                    <p className="text-neutral-400">Your subscription will renew automatically</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-3xl font-bold text-white">$15.00</p>
-                                    <p className="text-sm text-neutral-400">Total due</p>
-                                </div>
+                            <div css={tw`p-6 text-center`}>
+                                <p css={tw`text-neutral-400 mb-4`}>
+                                    {userServers.length > 0 
+                                        ? `You have ${userServers.length} server${userServers.length > 1 ? 's' : ''}. Invoices are generated monthly.`
+                                        : 'No active servers. Create a server to see billing information.'
+                                    }
+                                </p>
+                                {invoices.filter(i => i.status === 'pending').length > 0 && (
+                                    <p css={tw`text-yellow-400`}>
+                                        You have {invoices.filter(i => i.status === 'pending').length} pending invoice{invoices.filter(i => i.status === 'pending').length > 1 ? 's' : ''}
+                                    </p>
+                                )}
                             </div>
                         </Card>
                     </>
