@@ -139,8 +139,12 @@ export default () => {
             getCredits(),
         ])
             .then(([eggsRes, locationsRes, creditsData]) => {
-                const foundEgg = eggsRes.data.find((e: EggData) => e.id === cart.gameType);
-                const foundLocation = locationsRes.data.find((l: LocationData) => l.id === cart.location);
+                // API returns { data: [...] }, and axios wraps it in data again
+                const eggs = eggsRes.data.data || eggsRes.data;
+                const locations = locationsRes.data.data || locationsRes.data;
+                
+                const foundEgg = eggs.find((e: EggData) => e.id === cart.gameType);
+                const foundLocation = locations.find((l: LocationData) => l.id === cart.location);
                 
                 setEgg(foundEgg || null);
                 setLocation(foundLocation || null);
