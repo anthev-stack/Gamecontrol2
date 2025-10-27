@@ -58,6 +58,8 @@ Route::prefix('/account')->middleware(AccountSubject::class)->group(function () 
 
 Route::prefix('/billing')->middleware(AccountSubject::class)->group(function () {
     Route::get('/credits', [Client\Billing\CreditController::class, 'index'])->name('api:client.billing.credits');
+    Route::get('/preferences', [Client\Billing\BillingPreferenceController::class, 'index'])->name('api:client.billing.preferences');
+    Route::put('/preferences', [Client\Billing\BillingPreferenceController::class, 'update'])->name('api:client.billing.preferences.update');
 });
 
 /*

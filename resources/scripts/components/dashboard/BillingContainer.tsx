@@ -4,6 +4,8 @@ import tw from 'twin.macro';
 import styled from 'styled-components/macro';
 import { CreditCard, Download, DollarSign, Calendar, CheckCircle, Clock, Users } from 'lucide-react';
 import getCredits, { CreditData } from '@/api/billing/getCredits';
+import getBillingPreferences from '@/api/billing/getBillingPreferences';
+import updateBillingPreferences from '@/api/billing/updateBillingPreferences';
 import Spinner from '@/components/elements/Spinner';
 
 const Container = styled.div`
@@ -96,18 +98,37 @@ export default () => {
     const [activeTab, setActiveTab] = useState<'overview' | 'invoices' | 'split' | 'credits'>('overview');
     const [creditData, setCreditData] = useState<CreditData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [autoUseCredits, setAutoUseCredits] = useState(true);
+    const [emailInvoices, setEmailInvoices] = useState(true);
 
     useEffect(() => {
-        getCredits()
-            .then((data) => {
-                setCreditData(data);
+        Promise.all([
+            getCredits(),
+            getBillingPreferences(),
+        ])
+            .then(([creditsData, preferencesData]) => {
+                setCreditData(creditsData);
+                setAutoUseCredits(preferencesData.auto_use_credits);
+                setEmailInvoices(preferencesData.email_invoices);
                 setLoading(false);
             })
             .catch((error) => {
-                console.error('Failed to fetch credits:', error);
+                console.error('Failed to fetch billing data:', error);
                 setLoading(false);
             });
     }, []);
+
+    const handleToggleAutoUseCredits = (value: boolean) => {
+        setAutoUseCredits(value);
+        updateBillingPreferences({ auto_use_credits: value })
+            .catch((error) => console.error('Failed to update preference:', error));
+    };
+
+    const handleToggleEmailInvoices = (value: boolean) => {
+        setEmailInvoices(value);
+        updateBillingPreferences({ email_invoices: value })
+            .catch((error) => console.error('Failed to update preference:', error));
+    };
 
     const userCredits = creditData?.credits || 0;
     const dollarValue = creditData?.dollar_value || 0;
@@ -203,6 +224,61 @@ export default () => {
                                 </div>
                                 <Button>Update</Button>
                             </PaymentMethodCard>
+                        </Card>
+
+                        <Card>
+                            <CardTitle>
+                                <DollarSign size={24} />
+                                Billing Preferences
+                            </CardTitle>
+                            <div css={tw`space-y-4`}>
+                                <div css={tw`flex items-center justify-between p-4 rounded-lg`} style={{ backgroundColor: 'rgba(0, 41, 102, 0.3)', border: '1px solid rgba(0, 102, 255, 0.3)' }}>
+                                    <div>
+                                        <p css={tw`text-white font-semibold mb-1`}>Auto-Use Credits</p>
+                                        <p css={tw`text-sm text-neutral-400`}>
+                                            Automatically apply your credits to invoices. Turn off to save credits for later.
+                                        </p>
+                                    </div>
+                                    <label css={tw`relative inline-flex items-center cursor-pointer`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={autoUseCredits}
+                                            onChange={(e) => handleToggleAutoUseCredits(e.target.checked)}
+                                            css={tw`sr-only peer`}
+                                        />
+                                        <div css={tw`w-11 h-6 rounded-full peer transition-all duration-300`} style={{
+                                            backgroundColor: autoUseCredits ? '#0066ff' : '#4b5563'
+                                        }}>
+                                            <div css={tw`absolute top-0.5 left-0.5 bg-white rounded-full h-5 w-5 transition-transform duration-300`} style={{
+                                                transform: autoUseCredits ? 'translateX(20px)' : 'translateX(0)'
+                                            }}></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div css={tw`flex items-center justify-between p-4 rounded-lg`} style={{ backgroundColor: 'rgba(0, 41, 102, 0.3)', border: '1px solid rgba(0, 102, 255, 0.3)' }}>
+                                    <div>
+                                        <p css={tw`text-white font-semibold mb-1`}>Email Invoices</p>
+                                        <p css={tw`text-sm text-neutral-400`}>
+                                            Receive invoices via email when they're generated
+                                        </p>
+                                    </div>
+                                    <label css={tw`relative inline-flex items-center cursor-pointer`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={emailInvoices}
+                                            onChange={(e) => handleToggleEmailInvoices(e.target.checked)}
+                                            css={tw`sr-only peer`}
+                                        />
+                                        <div css={tw`w-11 h-6 rounded-full peer transition-all duration-300`} style={{
+                                            backgroundColor: emailInvoices ? '#0066ff' : '#4b5563'
+                                        }}>
+                                            <div css={tw`absolute top-0.5 left-0.5 bg-white rounded-full h-5 w-5 transition-transform duration-300`} style={{
+                                                transform: emailInvoices ? 'translateX(20px)' : 'translateX(0)'
+                                            }}></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
                         </Card>
 
                         <Card>
