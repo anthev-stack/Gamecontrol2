@@ -178,10 +178,11 @@
             }
 
             $.ajax({
-                url: '/api/application/users/' + userId + '/credits',
+                url: '/admin/credits/users/' + userId,
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) {
                     currentUserId = userId;
@@ -239,10 +240,11 @@
             }
 
             $.ajax({
-                url: '/api/application/users/' + currentUserId + '/credits',
+                url: '/admin/credits/users/' + currentUserId,
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
                     amount: parseInt(amount),
@@ -280,10 +282,11 @@
                 confirmButtonText: 'Yes, remove credits'
             }, function() {
                 $.ajax({
-                    url: '/api/application/users/' + currentUserId + '/credits',
+                    url: '/admin/credits/users/' + currentUserId,
                     method: 'DELETE',
                     headers: {
                         'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     data: {
                         amount: parseInt(amount),

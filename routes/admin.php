@@ -106,6 +106,9 @@ Route::group(['prefix' => 'users'], function () {
 */
 Route::group(['prefix' => 'credits'], function () {
     Route::get('/', [Admin\Credits\CreditController::class, 'index'])->name('admin.credits');
+    Route::get('/users/{user}', [Admin\Credits\CreditController::class, 'show'])->name('admin.credits.user');
+    Route::post('/users/{user}', [Admin\Credits\CreditController::class, 'store'])->name('admin.credits.add');
+    Route::delete('/users/{user}', [Admin\Credits\CreditController::class, 'destroy'])->name('admin.credits.remove');
 });
 
 /*
