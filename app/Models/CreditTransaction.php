@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Pterodactyl\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +18,7 @@ class CreditTransaction extends Model
     protected $fillable = [
         'user_id',
         'amount',
+        'dollar_value',
         'type',
         'description',
         'admin_id',
@@ -28,6 +29,7 @@ class CreditTransaction extends Model
      */
     protected $casts = [
         'amount' => 'integer',
+        'dollar_value' => 'float',
     ];
 
     /**
@@ -44,16 +46,6 @@ class CreditTransaction extends Model
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_id');
-    }
-
-    /**
-     * Get the dollar value of the transaction.
-     *
-     * @return float
-     */
-    public function getDollarValueAttribute(): float
-    {
-        return $this->amount * 0.10;
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Pterodactyl\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,14 +17,14 @@ class UserCredit extends Model
      */
     protected $fillable = [
         'user_id',
-        'amount',
+        'credits',
     ];
 
     /**
      * The attributes that should be cast.
      */
     protected $casts = [
-        'amount' => 'integer',
+        'credits' => 'integer',
     ];
 
     /**
@@ -42,7 +42,7 @@ class UserCredit extends Model
      */
     public function getDollarValueAttribute(): float
     {
-        return $this->amount * 0.10;
+        return $this->credits * 0.10;
     }
 
     /**
@@ -56,7 +56,7 @@ class UserCredit extends Model
      */
     public function addCredits(int $amount, string $type = 'admin_grant', ?string $description = null, ?int $adminId = null): bool
     {
-        $this->increment('amount', $amount);
+        $this->increment('credits', $amount);
         
         CreditTransaction::create([
             'user_id' => $this->user_id,
@@ -79,11 +79,11 @@ class UserCredit extends Model
      */
     public function deductCredits(int $amount, string $type = 'purchase', ?string $description = null): bool
     {
-        if ($this->amount < $amount) {
+        if ($this->credits < $amount) {
             return false;
         }
 
-        $this->decrement('amount', $amount);
+        $this->decrement('credits', $amount);
         
         CreditTransaction::create([
             'user_id' => $this->user_id,
