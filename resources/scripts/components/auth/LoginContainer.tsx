@@ -107,22 +107,6 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             Forgot password?
                         </Link>
                     </div>
-                    <div css={tw`mt-6 text-center`}>
-                        <p css={tw`text-xs text-neutral-500 mb-2`}>Don't have an account?</p>
-                        <Link
-                            to={'/auth/register'}
-                            css={tw`text-xs tracking-wide no-underline uppercase hover:text-neutral-600`}
-                            style={{
-                                background: 'linear-gradient(135deg, #0052cc 0%, #0066ff 100%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                backgroundClip: 'text',
-                                fontWeight: 600,
-                            }}
-                        >
-                            Create Account
-                        </Link>
-                    </div>
                 </LoginFormContainer>
             )}
         </Formik>
