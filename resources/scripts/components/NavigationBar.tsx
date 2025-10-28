@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Layers, Settings, LogOut, Menu, X, CreditCard, User } from 'lucide-react';
+import { ServerIcon, CogIcon, LogoutIcon, MenuIcon, XIcon, CreditCardIcon, UserIcon } from '@heroicons/react/solid';
 import { useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import SearchContainer from '@/components/dashboard/search/SearchContainer';
@@ -133,7 +133,7 @@ export default () => {
                 </div>
                 {user && (
                     <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        {mobileMenuOpen ? <XIcon className={'w-6 h-6'} /> : <MenuIcon className={'w-6 h-6'} />}
                     </MobileMenuButton>
                 )}
                 <RightNavigation $isOpen={mobileMenuOpen}>
@@ -142,33 +142,33 @@ export default () => {
                             <SearchContainer />
                             <ConditionalTooltip content="Server Dashboard">
                                 <NavLink to={'/servers'} onClick={() => setMobileMenuOpen(false)}>
-                                    <Layers size={20} />
+                                    <ServerIcon className={'w-5 h-5 flex-shrink-0'} />
                                     <span className="mobile-label">Dashboard</span>
                                 </NavLink>
                             </ConditionalTooltip>
                             <ConditionalTooltip content="Billing">
                                 <NavLink to={'/billing'} onClick={() => setMobileMenuOpen(false)}>
-                                    <CreditCard size={20} />
+                                    <CreditCardIcon className={'w-5 h-5 flex-shrink-0'} />
                                     <span className="mobile-label">Billing</span>
                                 </NavLink>
                             </ConditionalTooltip>
                             {rootAdmin && (
                                 <ConditionalTooltip content="Admin Panel">
                                     <a href={'/admin'} rel={'noreferrer'}>
-                                        <Settings size={20} />
+                                        <CogIcon className={'w-5 h-5 flex-shrink-0'} />
                                         <span className="mobile-label">Admin</span>
                                     </a>
                                 </ConditionalTooltip>
                             )}
                             <ConditionalTooltip content="Account Settings">
                                 <NavLink to={'/account'} onClick={() => setMobileMenuOpen(false)}>
-                                    <User size={20} />
+                                    <UserIcon className={'w-5 h-5 flex-shrink-0'} />
                                     <span className="mobile-label">Account</span>
                                 </NavLink>
                             </ConditionalTooltip>
                             <ConditionalTooltip content="Sign Out">
                                 <button onClick={() => { onTriggerLogout(); setMobileMenuOpen(false); }}>
-                                    <LogOut size={20} />
+                                    <LogoutIcon className={'w-5 h-5 flex-shrink-0'} />
                                     <span className="mobile-label">Sign Out</span>
                                 </button>
                             </ConditionalTooltip>
@@ -176,7 +176,7 @@ export default () => {
                     ) : (
                         <div className={'flex items-center px-4'}>
                             <LoginButton to={'/auth/login'}>
-                                Login / Sign Up
+                                Login
                             </LoginButton>
                         </div>
                     )}
