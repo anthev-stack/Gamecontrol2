@@ -32,8 +32,16 @@ module.exports = {
             },
             {
                 test: /\.js$/,
-                include: /node_modules\/(@tanstack|@headlessui)/,
-                loader: 'babel-loader',
+                include: [
+                    path.resolve('node_modules/@tanstack'),
+                    path.resolve('node_modules/@headlessui')
+                ],
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env'],
+                    },
+                },
             },
             {
                 test: /\.mjs$/,
