@@ -11,7 +11,7 @@ module.exports = {
     cache: true,
     target: 'web',
     mode: process.env.NODE_ENV,
-    devtool: isProduction ? 'source-map' : (process.env.DEVTOOL || 'eval-source-map'),
+    devtool: isProduction ? false : (process.env.DEVTOOL || 'eval-source-map'),
     performance: {
         hints: false,
     },
@@ -28,11 +28,6 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 exclude: /node_modules|\.spec\.tsx?$/,
-                loader: 'babel-loader',
-            },
-            {
-                test: /\.js$/,
-                include: /node_modules\/(@tanstack|@headlessui)/,
                 loader: 'babel-loader',
             },
             {
@@ -106,22 +101,18 @@ module.exports = {
             WEBPACK_BUILD_HASH: Date.now().toString(16),
         }),
         new AssetsManifestPlugin({ writeToDisk: true, publicPath: true, integrity: true, integrityHashes: ['sha384'] }),
-        // Only run TypeScript checker in development to catch new errors
-        // Production builds bypass checker to allow pre-existing Pterodactyl type errors
-        ...(isProduction ? [] : [
-            new ForkTsCheckerWebpackPlugin({
-                typescript: {
-                    mode: 'write-references',
-                    diagnosticOptions: {
-                        semantic: true,
-                        syntactic: true,
-                    },
+        new ForkTsCheckerWebpackPlugin({
+            typescript: {
+                mode: 'write-references',
+                diagnosticOptions: {
+                    semantic: true,
+                    syntactic: true,
                 },
-                eslint: {
-                    files: `${path.join(__dirname, '/resources/scripts')}/**/*.{ts,tsx}`,
-                }
-            }),
-        ]),
+            },
+            eslint: isProduction ? undefined : {
+                files: `${path.join(__dirname, '/resources/scripts')}/**/*.{ts,tsx}`,
+            }
+        }),
         process.env.ANALYZE_BUNDLE ? new BundleAnalyzerPlugin({
             analyzerHost: '0.0.0.0',
             analyzerPort: 8081,
@@ -139,7 +130,7 @@ module.exports = {
                 parallel: true,
                 extractComments: false,
                 terserOptions: {
-                    mangle: false, // Disable mangling to debug runtime error
+                    mangle: true,
                     output: {
                         comments: false,
                     },
