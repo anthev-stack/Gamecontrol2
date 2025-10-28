@@ -141,7 +141,7 @@ module.exports = {
                 parallel: true,
                 extractComments: false,
                 terserOptions: {
-                    mangle: true,
+                    mangle: false, // Disable mangling to debug runtime errors
                     output: {
                         comments: false,
                     },
