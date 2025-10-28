@@ -27,16 +27,8 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                exclude: {
-                    and: [/node_modules/],
-                    not: [/node_modules\/@tanstack/, /node_modules\/@headlessui/]
-                },
-                use: 'babel-loader',
-            },
-            {
-                test: /\.js$/,
-                include: /node_modules\/@tanstack|node_modules\/@headlessui/,
-                use: 'babel-loader',
+                exclude: /node_modules|\.spec\.tsx?$/,
+                loader: 'babel-loader',
             },
             {
                 test: /\.mjs$/,
@@ -109,21 +101,18 @@ module.exports = {
             WEBPACK_BUILD_HASH: Date.now().toString(16),
         }),
         new AssetsManifestPlugin({ writeToDisk: true, publicPath: true, integrity: true, integrityHashes: ['sha384'] }),
-        // Disable TypeScript checker in production to allow build to complete despite type errors
-        ...(isProduction ? [] : [
-            new ForkTsCheckerWebpackPlugin({
-                typescript: {
-                    mode: 'write-references',
-                    diagnosticOptions: {
-                        semantic: true,
-                        syntactic: true,
-                    },
+        new ForkTsCheckerWebpackPlugin({
+            typescript: {
+                mode: 'write-references',
+                diagnosticOptions: {
+                    semantic: true,
+                    syntactic: true,
                 },
-                eslint: {
-                    files: `${path.join(__dirname, '/resources/scripts')}/**/*.{ts,tsx}`,
-                }
-            }),
-        ]),
+            },
+            eslint: isProduction ? undefined : {
+                files: `${path.join(__dirname, '/resources/scripts')}/**/*.{ts,tsx}`,
+            }
+        }),
         process.env.ANALYZE_BUNDLE ? new BundleAnalyzerPlugin({
             analyzerHost: '0.0.0.0',
             analyzerPort: 8081,
@@ -141,7 +130,7 @@ module.exports = {
                 parallel: true,
                 extractComments: false,
                 terserOptions: {
-                    mangle: false, // Disable mangling to debug runtime errors
+                    mangle: true,
                     output: {
                         comments: false,
                     },
