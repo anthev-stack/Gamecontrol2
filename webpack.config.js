@@ -27,8 +27,16 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                exclude: /node_modules|\.spec\.tsx?$/,
-                loader: 'babel-loader',
+                exclude: {
+                    and: [/node_modules/],
+                    not: [/node_modules\/@tanstack/, /node_modules\/@headlessui/]
+                },
+                use: 'babel-loader',
+            },
+            {
+                test: /\.js$/,
+                include: /node_modules\/@tanstack|node_modules\/@headlessui/,
+                use: 'babel-loader',
             },
             {
                 test: /\.mjs$/,
