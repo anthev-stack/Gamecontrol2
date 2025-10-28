@@ -36,23 +36,7 @@ module.exports = {
                     path.resolve('node_modules/@tanstack'),
                     path.resolve('node_modules/@headlessui')
                 ],
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            ['@babel/preset-env', {
-                                modules: 'cjs',
-                                targets: {
-                                    browsers: ['> 1%', 'last 2 versions']
-                                }
-                            }]
-                        ],
-                        plugins: [
-                            '@babel/plugin-proposal-optional-chaining',
-                            '@babel/plugin-proposal-nullish-coalescing-operator'
-                        ],
-                    },
-                },
+                loader: 'babel-loader',
             },
             {
                 test: /\.mjs$/,
