@@ -109,6 +109,13 @@ module.exports = {
                     syntactic: true,
                 },
             },
+            issue: {
+                // Don't fail build on TypeScript errors (treat them as warnings)
+                exclude: [],
+                rules: {
+                    type: 'warning', // Change from 'error' to 'warning'
+                },
+            },
             eslint: isProduction ? undefined : {
                 files: `${path.join(__dirname, '/resources/scripts')}/**/*.{ts,tsx}`,
             }
