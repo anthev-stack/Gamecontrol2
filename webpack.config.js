@@ -32,10 +32,7 @@ module.exports = {
             },
             {
                 test: /\.js$/,
-                include: [
-                    path.resolve('node_modules/@tanstack'),
-                    path.resolve('node_modules/@headlessui')
-                ],
+                include: /node_modules\/(@tanstack|@headlessui)/,
                 loader: 'babel-loader',
             },
             {
