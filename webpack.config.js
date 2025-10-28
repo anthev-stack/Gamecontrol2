@@ -11,7 +11,7 @@ module.exports = {
     cache: true,
     target: 'web',
     mode: process.env.NODE_ENV,
-    devtool: isProduction ? false : (process.env.DEVTOOL || 'eval-source-map'),
+    devtool: isProduction ? 'source-map' : (process.env.DEVTOOL || 'eval-source-map'),
     performance: {
         hints: false,
     },
