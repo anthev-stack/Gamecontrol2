@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import NavigationBar from '@/components/NavigationBar';
 import DashboardContainer from '@/components/dashboard/DashboardContainer';
-import BillingContainer from '@/components/dashboard/BillingContainer';
+// import BillingContainer from '@/components/dashboard/BillingContainer';
 // import CartContainer from '@/components/store/CartContainer';
 // import CheckoutContainer from '@/components/store/CheckoutContainer';
 import LandingPage from '@/components/LandingPage';
@@ -43,9 +43,9 @@ export default () => {
                         <Route path={'/servers'} exact>
                             {user ? <DashboardContainer /> : <LandingPage />}
                         </Route>
-                        <Route path={'/billing'} exact>
+                        {/* <Route path={'/billing'} exact>
                             {user ? <BillingContainer /> : <LandingPage />}
-                        </Route>
+                        </Route> */}
                         {/* <Route path={'/cart'} exact>
                             <CartContainer />
                         </Route>
