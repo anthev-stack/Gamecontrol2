@@ -31,6 +31,27 @@ module.exports = {
                 loader: 'babel-loader',
             },
             {
+                test: /\.(js|jsx|ts|tsx)$/,
+                include: /node_modules\/@tanstack/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            ['@babel/env', {
+                                modules: false,
+                                useBuiltIns: 'entry',
+                                corejs: 3,
+                            }],
+                            '@babel/react',
+                        ],
+                        plugins: [
+                            '@babel/plugin-proposal-nullish-coalescing-operator',
+                            '@babel/plugin-proposal-optional-chaining',
+                        ],
+                    },
+                },
+            },
+            {
                 test: /\.mjs$/,
                 include: /node_modules/,
                 type: 'javascript/auto',
