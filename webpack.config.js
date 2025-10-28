@@ -31,6 +31,11 @@ module.exports = {
                 loader: 'babel-loader',
             },
             {
+                test: /\.js$/,
+                include: /node_modules\/(@tanstack|@headlessui)/,
+                loader: 'babel-loader',
+            },
+            {
                 test: /\.mjs$/,
                 include: /node_modules/,
                 type: 'javascript/auto',
